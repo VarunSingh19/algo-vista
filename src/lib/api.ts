@@ -15,6 +15,8 @@ api.interceptors.response.use(
   (error) => {
     const { response } = error;
 
+    console.error("API Error:", error);
+
     // Handle specific error codes
     if (response?.status === 401) {
       // Unauthorized - could redirect to login or show message
@@ -66,7 +68,6 @@ const apiClient = {
   toggleProblem: (data: { sheetId: string; problemId: string }) =>
     api.post("/progress/toggle", data),
 
-  // Add this new function
   getProgressReport: (sheetId: string) =>
     api.get(`/progress/report?sheetId=${sheetId}`),
 
@@ -98,22 +99,32 @@ const apiClient = {
   submitSolution: (problemId: string, data: any) =>
     api.post(`/problems/${problemId}/submit`, data),
 
-  getSubmissions: (problemId: string) =>
-    api.get(`/problems/${problemId}/submissions`),
+  getSubmissions: (options: { status?: string } = {}) => {
+    console.log("Getting submissions with options:", options);
+    const params = new URLSearchParams();
+    if (options.status) params.append("status", options.status);
+    const query = params.toString();
+    return api.get(`/submissions${query ? `?${query}` : ""}`);
+  },
 
-  getUserSubmissions: () => api.get("/submissions/user"),
+  getUserSubmissions: (options: { status?: string } = {}) => {
+    console.log("Getting user submissions with options:", options);
+    const params = new URLSearchParams();
+    if (options.status) params.append("status", options.status);
+    const query = params.toString();
+    return api.get(`/submissions${query ? `?${query}` : ""}`);
+  },
 
   reviewSubmission: (submissionId: string, data: any) =>
     api.put(`/submissions/${submissionId}/review`, data),
 
-  // NEW METHODS FOR PROBLEM PAGE
   // Get user's submissions for a specific problem
   getProblemSubmissions: (problemId: string) =>
     api.get(`/problems/${problemId}/submissions`),
 
   // Submit code for a problem
   submitCode: (data: { problemId: string; code: string; language: string }) =>
-    api.post("/submissions", data),
+    api.post(`/problems/${data.problemId}/submit`, data),
 
   // Admin
   getAllUsers: () => api.get("/users"),

@@ -22,7 +22,7 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  isLoading: boolean;
+  isLoading: boolean; // Compatibility
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
@@ -42,14 +42,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Fetch current user on initial load
   useEffect(() => {
+    console.log('Auth context initialized');
     const fetchUser = async () => {
       try {
+        console.log('Fetching current user...');
         const { data } = await apiClient.getCurrentUser();
+        console.log('User data fetched:', data);
         setUser(data);
       } catch (err) {
+        console.log('User not authenticated or fetch error');
         // User is not authenticated, that's okay
         setUser(null);
       } finally {
+        console.log('Auth loading complete');
         setLoading(false);
       }
     };
@@ -154,6 +159,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const contextValue: AuthContextType = {
     user,
     loading,
+    isLoading: loading, // For backwards compatibility
     error,
     login,
     register,

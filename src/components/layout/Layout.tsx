@@ -359,7 +359,8 @@ import {
   ChevronDown,
   GraduationCap,
   LayoutDashboard,
-  Code
+  Code,
+  ClipboardList
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -397,6 +398,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       href: '/sheets',
       icon: <BookOpen size={16} className="mr-2" />,
     },
+    {
+      name: 'Submissions',
+      href: '/submissions',
+      icon: <ClipboardList size={16} className="mr-2" />,
+      requiresAuth: true, // Only show this link if user is authenticated
+    },
   ];
 
   const resourcesLinks = [
@@ -432,16 +439,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           {/* Desktop navigation */}
           <nav className="hidden md:flex items-center space-x-4 lg:space-x-6 mx-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className={`text-sm font-medium transition-colors hover:text-primary ${pathname === link.href ? 'text-foreground' : 'text-muted-foreground'
-                  }`}
-              >
-                {link.name}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              // Skip links that require auth when user is not logged in
+              if (link.requiresAuth && !user) return null;
+
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={`text-sm font-medium transition-colors hover:text-primary ${pathname === link.href ? 'text-foreground' : 'text-muted-foreground'
+                    }`}
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
 
             {/* Resources dropdown */}
             <DropdownMenu>
@@ -509,6 +521,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       Profile
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/submissions" className="flex items-center cursor-pointer">
+                      <ClipboardList size={16} className="mr-2" />
+                      My Submissions
+                    </Link>
+                  </DropdownMenuItem>
                   {user.role === 'admin' && (
                     <DropdownMenuItem asChild>
                       <Link href="/admin" className="flex items-center cursor-pointer">
@@ -556,20 +574,25 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="fixed inset-0 top-14 z-40 w-full bg-background md:hidden">
           <div className="container py-4 space-y-4">
             <nav className="grid gap-2">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className={`flex items-center px-3 py-2 text-sm rounded-md ${pathname === link.href
+              {navLinks.map((link) => {
+                // Skip links that require auth when user is not logged in
+                if (link.requiresAuth && !user) return null;
+
+                return (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    className={`flex items-center px-3 py-2 text-sm rounded-md ${pathname === link.href
                       ? 'bg-accent text-accent-foreground'
                       : 'hover:bg-accent hover:text-accent-foreground'
-                    }`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {link.icon}
-                  {link.name}
-                </Link>
-              ))}
+                      }`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {link.icon}
+                    {link.name}
+                  </Link>
+                );
+              })}
 
               {/* Resources section in mobile */}
               <div className="px-3 py-2">
@@ -636,6 +659,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   >
                     <User size={16} className="mr-2" />
                     Profile
+                  </Link>
+                  <Link
+                    href="/submissions"
+                    className="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent hover:text-accent-foreground"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <ClipboardList size={16} className="mr-2" />
+                    My Submissions
                   </Link>
                   <Button
                     variant="ghost"

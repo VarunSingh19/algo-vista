@@ -186,7 +186,7 @@ export default function HomePage() {
               <Button size="lg" asChild className="bg-orange-500 hover:bg-orange-600">
                 <Link href="/sheets">Explore Sheets</Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
+              <Button size="lg" variant="secondary" asChild>
                 <Link href="/blogs">Read Blogs</Link>
               </Button>
             </div>
@@ -313,7 +313,7 @@ export default function HomePage() {
                   <Link key={sheet._id} href={`/sheets/${sheet._id}`}>
                     <Card className="bg-zinc-900/60 border-zinc-800 hover:border-orange-500/50 transition-all">
                       <CardContent className="p-4">
-                        <h4 className="font-medium mb-2">{sheet.title}</h4>
+                        <h4 className="font-medium mb-2 text-zinc-400">{sheet.title}</h4>
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-zinc-400">{sheet.totalProblems} problems</span>
                           <div className="flex items-center">
@@ -323,7 +323,7 @@ export default function HomePage() {
                                 style={{ width: `${getCompletionPercentage(sheet._id, sheet.totalProblems)}%` }}
                               ></div>
                             </div>
-                            <span className="text-xs">{getCompletionPercentage(sheet._id, sheet.totalProblems)}%</span>
+                            <span className="text-xs text-zinc-400">{getCompletionPercentage(sheet._id, sheet.totalProblems)}%</span>
                           </div>
                         </div>
                       </CardContent>
@@ -332,7 +332,7 @@ export default function HomePage() {
                 ))}
 
                 <Button variant="outline" size="sm" className="w-full" asChild>
-                  <Link href="/sheets">View All Sheets</Link>
+                  <Link href="/sheets" className='text-zinc-800'>View All Sheets</Link>
                 </Button>
               </div>
             </div>
@@ -350,7 +350,7 @@ export default function HomePage() {
                     <Link key={blog._id} href={`/blogs/${blog._id}`}>
                       <Card className="bg-zinc-900/60 border-zinc-800 hover:border-blue-500/50 transition-all">
                         <CardContent className="p-4">
-                          <h4 className="font-medium mb-2 line-clamp-1">{blog.title}</h4>
+                          <h4 className="font-medium mb-2 line-clamp-1 text-zinc-400">{blog.title}</h4>
                           <p className="text-xs text-zinc-400 line-clamp-2 mb-2">{blog.summary}</p>
                           <div className="flex items-center justify-between text-xs text-zinc-500">
                             <span>{formatDate(blog.createdAt)}</span>
@@ -369,7 +369,7 @@ export default function HomePage() {
                 )}
 
                 <Button variant="outline" size="sm" className="w-full" asChild>
-                  <Link href="/blogs">View All Blogs</Link>
+                  <Link href="/blogs" className='text-zinc-800'>View All Blogs</Link>
                 </Button>
               </div>
             </div>
@@ -387,7 +387,7 @@ export default function HomePage() {
                     <Link key={problem._id} href={`/problems/${problem._id}`}>
                       <Card className="bg-zinc-900/60 border-zinc-800 hover:border-green-500/50 transition-all">
                         <CardContent className="p-4">
-                          <h4 className="font-medium mb-2">{problem.title}</h4>
+                          <h4 className="font-medium mb-2 text-zinc-400">{problem.title}</h4>
                           <div className="flex justify-between items-center">
                             <Badge
                               variant="outline"
@@ -413,7 +413,7 @@ export default function HomePage() {
                 )}
 
                 <Button variant="outline" size="sm" className="w-full" asChild>
-                  <Link href="/problems">Explore All Problems</Link>
+                  <Link href="/problems" className='text-zinc-800'>Explore All Problems</Link>
                 </Button>
               </div>
             </div>
@@ -452,7 +452,7 @@ export default function HomePage() {
                   <Link href="/sheets">Continue Learning</Link>
                 </Button>
                 <Button size="lg" variant="outline" asChild>
-                  <Link href="/profile">View Profile</Link>
+                  <Link href="/profile" className='text-zinc-900'>View Profile</Link>
                 </Button>
               </div>
             </div>
