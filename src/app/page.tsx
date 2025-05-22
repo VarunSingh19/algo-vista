@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import apiClient from '@/lib/api';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import ProfileCard from '@/components/profile/ProfileCard';
-import { AlertCircle, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { AlertCircle, ChevronRight, Code, BookOpen, GraduationCap, LayoutDashboard, BarChart2, FilePen, User, CheckCircle } from 'lucide-react';
 
 interface Sheet {
   _id: string;
@@ -21,26 +22,65 @@ interface SheetProgress {
   completedProblemIds: string[];
 }
 
+interface Blog {
+  _id: string;
+  title: string;
+  summary: string;
+  coverImage: string;
+  createdAt: string;
+  views: number;
+  readTime: number;
+}
+
+interface CodingProblem {
+  _id: string;
+  title: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+}
+
 export default function HomePage() {
   const { user } = useAuth();
   const [sheets, setSheets] = useState<Sheet[]>([]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [problems, setProblems] = useState<CodingProblem[]>([]);
   const [progress, setProgress] = useState<Record<string, SheetProgress>>({});
+  const [userCount, setUserCount] = useState<number>(8645);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch sheets on component mount
+  // Fetch sheets, blogs, and problems on component mount
   useEffect(() => {
-    const fetchSheets = async () => {
+    const fetchResources = async () => {
       try {
         setLoading(true);
-        const { data } = await apiClient.getAllSheets();
-        setSheets(data);
+
+        // Fetch sheets
+        const sheetsResponse = await apiClient.getAllSheets();
+        setSheets(sheetsResponse.data || []);
+
+        // Fetch blogs if API exists, otherwise initialize empty
+        try {
+          const blogsResponse = await apiClient.getAllBlogs();
+          setBlogs(blogsResponse.data.data || []);
+        } catch (error) {
+          console.log('Blogs API might not be available yet');
+          setBlogs([]);
+        }
+
+        // Fetch problems if API exists, otherwise initialize empty
+        try {
+          const problemsResponse = await apiClient.getAllProblems();
+          setProblems(problemsResponse.data.data || []);
+        } catch (error) {
+          console.log('Problems API might not be available yet');
+          setProblems([]);
+        }
 
         // Initialize guest progress from localStorage if not logged in
         if (!user) {
           const guestProgress: Record<string, SheetProgress> = {};
 
-          data.forEach((sheet: Sheet) => {
+          sheetsResponse.data.forEach((sheet: Sheet) => {
             const localProgress = localStorage.getItem(`progress:${sheet._id}`);
             guestProgress[sheet._id] = {
               sheetId: sheet._id,
@@ -51,13 +91,13 @@ export default function HomePage() {
           setProgress(guestProgress);
         }
       } catch (err: any) {
-        setError(err.response?.data?.error || 'Failed to fetch sheets');
+        setError(err.response?.data?.error || 'Failed to fetch resources');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchSheets();
+    fetchResources();
   }, [user]);
 
   // Fetch user progress for each sheet if logged in
@@ -99,19 +139,23 @@ export default function HomePage() {
     return Math.round((sheetProgress.completedProblemIds.length / totalProblems) * 100);
   };
 
+  // Format date
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
   // Loading state
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto p-4 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-1">
-          <div className="h-[300px] rounded-lg bg-card animate-pulse"></div>
-        </div>
-        <div className="md:col-span-2 space-y-6">
-          <div className="h-16 rounded-lg bg-card animate-pulse"></div>
-          <div className="space-y-4">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="h-24 rounded-lg bg-card animate-pulse"></div>
-            ))}
+      <div className="w-full bg-black min-h-screen text-white">
+        <div className="max-w-6xl mx-auto px-4 pt-16 pb-12">
+          <div className="flex justify-center items-center min-h-[400px]">
+            <div className="w-8 h-8 border-t-2 border-b-2 border-primary rounded-full animate-spin"></div>
           </div>
         </div>
       </div>
@@ -119,90 +163,358 @@ export default function HomePage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-4 grid grid-cols-1 md:grid-cols-3 gap-6">
-      {/* Sidebar */}
-      <div className="md:col-span-1">
-        <ProfileCard />
-      </div>
+    <div className="w-full bg-black min-h-screen text-white">
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-b from-zinc-900 to-black pt-16 pb-24 px-4 overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-10 h-10 bg-orange-500/20 rounded-full"></div>
+          <div className="absolute bottom-40 right-20 w-20 h-20 bg-blue-500/10 rounded-full"></div>
+          <div className="absolute top-60 right-40 w-5 h-5 bg-green-500/20 rounded-full"></div>
+          <div className="absolute bottom-10 left-1/3 w-8 h-8 bg-yellow-500/10 rounded-full"></div>
+        </div>
 
-      {/* Main content */}
-      <div className="md:col-span-2 space-y-6">
-        {/* Welcome card */}
-        <Card>
-          <CardContent className="pt-6">
-            <h1 className="text-2xl font-bold">
-              Welcome{user ? `, ${user.name}` : ' to AlgoVista'}!
+        <div className="max-w-5xl mx-auto relative z-10">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Advance Your Career with <span className="text-orange-500">AlgoVista</span>
             </h1>
-            <p className="text-muted-foreground mt-2">
-              Track your progress on algorithm problems with personalized sheets.
-              {!user && " Sign in to save your progress across devices."}
+            <p className="text-xl text-zinc-400 max-w-2xl mx-auto mb-8">
+              Master DSA with curated resources and expert guidance. Learn the skills that set you apart and join the top coders!
             </p>
-          </CardContent>
-        </Card>
 
-        {/* Sheets list */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Problem Sheets</h2>
+            <div className="flex justify-center gap-4 flex-wrap">
+              <Button size="lg" asChild className="bg-orange-500 hover:bg-orange-600">
+                <Link href="/sheets">Explore Sheets</Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link href="/blogs">Read Blogs</Link>
+              </Button>
+            </div>
+          </div>
 
-          {error ? (
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex justify-center py-4 text-destructive">
-                  <AlertCircle className="mr-2" />
-                  {error}
+          <div className="mt-12 p-6 bg-zinc-900/80 rounded-xl border border-zinc-800">
+            <div className="flex items-center mb-4">
+              <h2 className="text-2xl font-bold text-orange-500">{userCount}+</h2>
+              <span className="ml-2 text-xl font-semibold">Learners</span>
+            </div>
+            <p className="text-zinc-400 text-sm">have improved their coding skills through our platform</p>
+
+            <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="flex flex-col items-center bg-zinc-800/50 rounded-lg p-4">
+                <div className="w-12 h-12 bg-blue-900/30 rounded-full flex items-center justify-center mb-3">
+                  <BookOpen className="h-6 w-6 text-blue-400" />
                 </div>
-              </CardContent>
-            </Card>
-          ) : sheets.length === 0 ? (
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center py-8 text-muted-foreground">
-                  No problem sheets available
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
-            sheets.map(sheet => (
-              <Card key={sheet._id} className="overflow-hidden">
-                <CardContent className="p-0">
-                  <Link href={`/sheets/${sheet._id}`} className="block p-4 hover:bg-accent/50">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between">
-                      <div className="space-y-1">
-                        <h3 className="font-semibold">{sheet.title}</h3>
-                        <p className="text-sm text-muted-foreground">{sheet.description}</p>
-                      </div>
+                <span className="text-sm text-center">DSA Sheets</span>
+              </div>
 
-                      <div className="flex items-center mt-2 md:mt-0">
-                        {/* Completion percentage */}
-                        <div className="mr-4">
+              <div className="flex flex-col items-center bg-zinc-800/50 rounded-lg p-4">
+                <div className="w-12 h-12 bg-green-900/30 rounded-full flex items-center justify-center mb-3">
+                  <FilePen className="h-6 w-6 text-green-400" />
+                </div>
+                <span className="text-sm text-center">Tech Blogs</span>
+              </div>
+
+              <div className="flex flex-col items-center bg-zinc-800/50 rounded-lg p-4">
+                <div className="w-12 h-12 bg-orange-900/30 rounded-full flex items-center justify-center mb-3">
+                  <Code className="h-6 w-6 text-orange-400" />
+                </div>
+                <span className="text-sm text-center">Coding Problems</span>
+              </div>
+
+              <div className="flex flex-col items-center bg-zinc-800/50 rounded-lg p-4">
+                <div className="w-12 h-12 bg-purple-900/30 rounded-full flex items-center justify-center mb-3">
+                  <GraduationCap className="h-6 w-6 text-purple-400" />
+                </div>
+                <span className="text-sm text-center">Learning Paths</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Resources Section */}
+      <section className="py-16 px-4 bg-zinc-950">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold mb-12 text-center">Resources to Learn</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Link href="/sheets" className="block group">
+              <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden h-full group-hover:border-orange-500/50 transition-colors">
+                <div className="h-2 bg-orange-500"></div>
+                <div className="p-6">
+                  <div className="w-12 h-12 bg-orange-900/30 rounded-lg flex items-center justify-center mb-4">
+                    <BookOpen className="h-6 w-6 text-orange-400" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2 group-hover:text-orange-500 transition-colors">DSA Sheets</h3>
+                  <p className="text-zinc-400 text-sm">Master data structures & algorithms with our comprehensive sheets</p>
+
+                  <div className="mt-6 flex items-center text-orange-500 text-sm font-medium">
+                    <span>Explore Sheets</span>
+                    <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/blogs" className="block group">
+              <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden h-full group-hover:border-blue-500/50 transition-colors">
+                <div className="h-2 bg-blue-500"></div>
+                <div className="p-6">
+                  <div className="w-12 h-12 bg-blue-900/30 rounded-lg flex items-center justify-center mb-4">
+                    <FilePen className="h-6 w-6 text-blue-400" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2 group-hover:text-blue-500 transition-colors">Tech Blogs</h3>
+                  <p className="text-zinc-400 text-sm">Stay updated with the latest technologies and coding concepts</p>
+
+                  <div className="mt-6 flex items-center text-blue-500 text-sm font-medium">
+                    <span>Read Blogs</span>
+                    <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/problems" className="block group">
+              <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden h-full group-hover:border-green-500/50 transition-colors">
+                <div className="h-2 bg-green-500"></div>
+                <div className="p-6">
+                  <div className="w-12 h-12 bg-green-900/30 rounded-lg flex items-center justify-center mb-4">
+                    <Code className="h-6 w-6 text-green-400" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2 group-hover:text-green-500 transition-colors">Coding Problems</h3>
+                  <p className="text-zinc-400 text-sm">Sharpen your problem-solving skills with our coding challenges</p>
+
+                  <div className="mt-6 flex items-center text-green-500 text-sm font-medium">
+                    <span>Solve Problems</span>
+                    <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Recent Content Section */}
+      <section className="py-16 px-4 bg-gradient-to-b from-zinc-950 to-black">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold mb-12 text-center">Latest Resources</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Top DSA Sheets */}
+            <div>
+              <div className="flex items-center mb-6">
+                <BookOpen className="h-5 w-5 text-orange-500 mr-2" />
+                <h3 className="text-xl font-bold">Popular Sheets</h3>
+              </div>
+
+              <div className="space-y-4">
+                {sheets.slice(0, 3).map(sheet => (
+                  <Link key={sheet._id} href={`/sheets/${sheet._id}`}>
+                    <Card className="bg-zinc-900/60 border-zinc-800 hover:border-orange-500/50 transition-all">
+                      <CardContent className="p-4">
+                        <h4 className="font-medium mb-2">{sheet.title}</h4>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-zinc-400">{sheet.totalProblems} problems</span>
                           <div className="flex items-center">
-                            <CheckCircle2
-                              size={16}
-                              className={`mr-1 ${
-                                getCompletionPercentage(sheet._id, sheet.totalProblems) > 0
-                                  ? 'text-green-500'
-                                  : 'text-muted-foreground'
-                              }`}
-                            />
-                            <span>
-                              {getCompletionPercentage(sheet._id, sheet.totalProblems)}%
-                            </span>
+                            <div className="w-16 h-1.5 bg-zinc-800 rounded-full mr-2">
+                              <div
+                                className="h-1.5 bg-orange-500 rounded-full"
+                                style={{ width: `${getCompletionPercentage(sheet._id, sheet.totalProblems)}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-xs">{getCompletionPercentage(sheet._id, sheet.totalProblems)}%</span>
                           </div>
-                          <p className="text-xs text-muted-foreground">
-                            {progress[sheet._id]?.completedProblemIds.length || 0} / {sheet.totalProblems}
-                          </p>
                         </div>
-
-                        <ArrowRight size={18} />
-                      </div>
-                    </div>
+                      </CardContent>
+                    </Card>
                   </Link>
-                </CardContent>
-              </Card>
-            ))
+                ))}
+
+                <Button variant="outline" size="sm" className="w-full" asChild>
+                  <Link href="/sheets">View All Sheets</Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* Latest Blogs */}
+            <div>
+              <div className="flex items-center mb-6">
+                <FilePen className="h-5 w-5 text-blue-500 mr-2" />
+                <h3 className="text-xl font-bold">Latest Blogs</h3>
+              </div>
+
+              <div className="space-y-4">
+                {blogs.length > 0 ? (
+                  blogs.slice(0, 3).map(blog => (
+                    <Link key={blog._id} href={`/blogs/${blog._id}`}>
+                      <Card className="bg-zinc-900/60 border-zinc-800 hover:border-blue-500/50 transition-all">
+                        <CardContent className="p-4">
+                          <h4 className="font-medium mb-2 line-clamp-1">{blog.title}</h4>
+                          <p className="text-xs text-zinc-400 line-clamp-2 mb-2">{blog.summary}</p>
+                          <div className="flex items-center justify-between text-xs text-zinc-500">
+                            <span>{formatDate(blog.createdAt)}</span>
+                            <span>{blog.readTime} min read</span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  ))
+                ) : (
+                  <Card className="bg-zinc-900/60 border-zinc-800">
+                    <CardContent className="p-4 text-center text-zinc-400">
+                      <p>Blogs coming soon!</p>
+                    </CardContent>
+                  </Card>
+                )}
+
+                <Button variant="outline" size="sm" className="w-full" asChild>
+                  <Link href="/blogs">View All Blogs</Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* Coding Problems */}
+            <div>
+              <div className="flex items-center mb-6">
+                <Code className="h-5 w-5 text-green-500 mr-2" />
+                <h3 className="text-xl font-bold">Coding Problems</h3>
+              </div>
+
+              <div className="space-y-4">
+                {problems.length > 0 ? (
+                  problems.slice(0, 3).map(problem => (
+                    <Link key={problem._id} href={`/problems/${problem._id}`}>
+                      <Card className="bg-zinc-900/60 border-zinc-800 hover:border-green-500/50 transition-all">
+                        <CardContent className="p-4">
+                          <h4 className="font-medium mb-2">{problem.title}</h4>
+                          <div className="flex justify-between items-center">
+                            <Badge
+                              variant="outline"
+                              className={`
+                                ${problem.difficulty === 'Easy' ? 'text-green-500 border-green-500/30' :
+                                  problem.difficulty === 'Medium' ? 'text-yellow-500 border-yellow-500/30' :
+                                    'text-red-500 border-red-500/30'}
+                              `}
+                            >
+                              {problem.difficulty}
+                            </Badge>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  ))
+                ) : (
+                  <Card className="bg-zinc-900/60 border-zinc-800">
+                    <CardContent className="p-4 text-center text-zinc-400">
+                      <p>Coding problems coming soon!</p>
+                    </CardContent>
+                  </Card>
+                )}
+
+                <Button variant="outline" size="sm" className="w-full" asChild>
+                  <Link href="/problems">Explore All Problems</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Join Community Section */}
+      <section className="py-16 px-4 bg-zinc-950 border-t border-zinc-900">
+        <div className="max-w-5xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-6">Join Our Ever-Growing Global Community</h2>
+          <p className="text-zinc-400 max-w-2xl mx-auto mb-8">
+            Connect with fellow coders, share your knowledge, and accelerate your learning journey with our supportive community.
+          </p>
+
+          {user ? (
+            <div className="flex flex-col items-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-pink-500 rounded-full flex items-center justify-center mb-4">
+                {user.avatarUrl ? (
+                  <Image
+                    src={user.avatarUrl}
+                    alt={user.name}
+                    width={80}
+                    height={80}
+                    className="rounded-full"
+                  />
+                ) : (
+                  <User className="h-10 w-10 text-white" />
+                )}
+              </div>
+              <h3 className="text-xl font-medium mb-1">Welcome, {user.name}!</h3>
+              <p className="text-zinc-400 mb-6">You're part of our coding community</p>
+
+              <div className="flex gap-4">
+                <Button size="lg" className="bg-orange-500 hover:bg-orange-600" asChild>
+                  <Link href="/sheets">Continue Learning</Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/profile">View Profile</Link>
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex gap-4 justify-center">
+              <Button size="lg" className="bg-orange-500 hover:bg-orange-600" asChild>
+                <Link href="/register">Join Now</Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link href="/login">Sign In</Link>
+              </Button>
+            </div>
           )}
         </div>
-      </div>
+      </section>
+
+      {/* Features Section */}
+      {!user && (
+        <section className="py-16 px-4 bg-black">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-3xl font-bold mb-12 text-center">Revolutionize the Way You Learn</h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card className="bg-zinc-900/50 border-zinc-800">
+                <CardContent className="p-6">
+                  <div className="flex mb-4 text-orange-500">
+                    <BookOpen className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Structured Learning</h3>
+                  <p className="text-zinc-400">
+                    Follow our proven learning paths to build strong foundations in algorithms and data structures.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-zinc-900/50 border-zinc-800">
+                <CardContent className="p-6">
+                  <div className="flex mb-4 text-blue-500">
+                    <CheckCircle className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Track Progress</h3>
+                  <p className="text-zinc-400">
+                    Monitor your learning journey with detailed progress tracking and performance analytics.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-zinc-900/50 border-zinc-800">
+                <CardContent className="p-6">
+                  <div className="flex mb-4 text-green-500">
+                    <LayoutDashboard className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Learn by Doing</h3>
+                  <p className="text-zinc-400">
+                    Solve real-world problems and strengthen your skills through hands-on practice.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

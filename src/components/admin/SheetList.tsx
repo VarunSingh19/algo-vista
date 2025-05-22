@@ -1,8 +1,7 @@
 "use client"
 
 import type React from "react"
-
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import apiClient from "@/lib/api"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -354,31 +353,50 @@ export default function SheetList() {
   )
 
   // Add this function to handle opening the edit dialog
-  const handleEditSheet = (sheet: Sheet) => {
-    // Create a deep copy of the sheet to avoid mutating the original
-    const sheetCopy = JSON.parse(JSON.stringify(sheet))
+  const handleEditSheet = async (sheet: Sheet) => {
+    try {
+      // First fetch the latest sheet data directly from the API
+      const { data: freshSheetData } = await apiClient.getSheet(sheet._id);
+      console.log("Fresh sheet data from API:", freshSheetData);
 
-    // Ensure sections array exists
-    if (!sheetCopy.sections) {
-      sheetCopy.sections = []
+      // Create a deep copy of the sheet to avoid mutating the original
+      const sheetCopy: Sheet = {
+        _id: freshSheetData._id,
+        title: freshSheetData.title,
+        description: freshSheetData.description,
+        totalProblems: freshSheetData.totalProblems,
+        sections: Array.isArray(freshSheetData.sections)
+          ? freshSheetData.sections.map(section => ({
+            id: section.id,
+            title: section.title,
+            topics: Array.isArray(section.topics)
+              ? section.topics.map(topic => ({
+                id: topic.id,
+                title: topic.title,
+                problems: Array.isArray(topic.problems)
+                  ? topic.problems.map(problem => ({
+                    id: problem.id,
+                    title: problem.title,
+                    problemLink: problem.problemLink || "",
+                    videoLink: problem.videoLink || "",
+                    editorialLink: problem.editorialLink || "",
+                    difficulty: problem.difficulty
+                  }))
+                  : []
+              }))
+              : []
+          }))
+          : []
+      };
+
+      console.log("Sheet copy for editing:", sheetCopy);
+
+      setEditingSheet(sheetCopy);
+      setEditDialogOpen(true);
+    } catch (error) {
+      console.error("Error fetching sheet for editing:", error);
+      setError("Failed to load sheet data for editing");
     }
-
-    // Ensure each section has a topics array
-    sheetCopy.sections.forEach((section: Section) => {
-      if (!section.topics) {
-        section.topics = []
-      }
-
-      // Ensure each topic has a problems array
-      sheetCopy.topics.forEach((topic: Topic) => {
-        if (!topic.problems) {
-          topic.problems = []
-        }
-      })
-    })
-
-    setEditingSheet(sheetCopy)
-    setEditDialogOpen(true)
   }
 
   // Add this function to handle updating the sheet
@@ -966,7 +984,7 @@ export default function SheetList() {
                       >
                         {editingSheet.sections.map((section, sectionIndex) => (
                           <AccordionItem
-                            key={section.id}
+                            key={section.id || sectionIndex}
                             value={`edit-section-${sectionIndex}`}
                             className="border rounded-md"
                           >
@@ -1012,9 +1030,9 @@ export default function SheetList() {
                                   </div>
 
                                   <div className="space-y-4 ml-4">
-                                    {section.topics &&
+                                    {Array.isArray(section.topics) && section.topics.length > 0 ? (
                                       section.topics.map((topic, topicIndex) => (
-                                        <div key={topic.id} className="border rounded-md p-4 space-y-3">
+                                        <div key={topic.id || topicIndex} className="border rounded-md p-4 space-y-3">
                                           <div className="flex items-center justify-between">
                                             <h5 className="text-sm font-medium">
                                               {topic.title || `Topic ${topicIndex + 1}`}
@@ -1055,10 +1073,10 @@ export default function SheetList() {
                                             </div>
 
                                             <div className="space-y-4">
-                                              {topic.problems &&
+                                              {Array.isArray(topic.problems) && topic.problems.length > 0 ? (
                                                 topic.problems.map((problem, problemIndex) => (
                                                   <div
-                                                    key={problem.id}
+                                                    key={problem.id || problemIndex}
                                                     className="border rounded-md p-3 space-y-2 bg-background"
                                                   >
                                                     <div className="flex items-center justify-between">
@@ -1182,11 +1200,21 @@ export default function SheetList() {
                                                       </div>
                                                     </div>
                                                   </div>
-                                                ))}
+                                                ))
+                                              ) : (
+                                                <div className="text-center py-2 text-xs text-muted-foreground">
+                                                  No problems found. Add a problem to get started.
+                                                </div>
+                                              )}
                                             </div>
                                           </div>
                                         </div>
-                                      ))}
+                                      ))
+                                    ) : (
+                                      <div className="text-center py-2 text-xs text-muted-foreground">
+                                        No topics found. Add a topic to get started.
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -1251,9 +1279,9 @@ export default function SheetList() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleEditSheet(sheet)
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          await handleEditSheet(sheet);
                         }}
                       >
                         <FileEdit size={16} className="mr-2" />
