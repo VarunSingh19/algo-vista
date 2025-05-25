@@ -1,15 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import dbConnect from '@/lib/db';
-import User from '@/lib/models/User';
-import { hashPassword, generateToken } from '@/lib/auth';
-import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import dbConnect from "@/lib/db";
+import User from "@/lib/models/User";
+import { hashPassword, generateToken } from "@/lib/auth";
+import { cookies } from "next/headers";
 
 // Validation schema
 const registerSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 export async function POST(request: NextRequest) {
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return NextResponse.json(
-        { error: 'User with this email already exists' },
+        { error: "User with this email already exists" },
         { status: 400 }
       );
     }
@@ -54,13 +54,13 @@ export async function POST(request: NextRequest) {
 
     // Set cookie
     cookies().set({
-      name: 'jwt',
+      name: "jwt",
       value: token,
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
       maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: '/'
+      path: "/",
     });
 
     // Return user data (excluding password)
@@ -76,9 +76,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ user: userResponse }, { status: 201 });
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error("Registration error:", error);
     return NextResponse.json(
-      { error: 'Failed to register user' },
+      { error: "Failed to register user" },
       { status: 500 }
     );
   }

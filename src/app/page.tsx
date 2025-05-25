@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AlertCircle, ChevronRight, Code, BookOpen, GraduationCap, LayoutDashboard, BarChart2, FilePen, User, CheckCircle } from 'lucide-react';
+import { Loader } from '@/components/ui/loader';
 
 interface Sheet {
   _id: string;
@@ -44,7 +45,7 @@ export default function HomePage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [problems, setProblems] = useState<CodingProblem[]>([]);
   const [progress, setProgress] = useState<Record<string, SheetProgress>>({});
-  const [userCount, setUserCount] = useState<number>(8645);
+  const [userCount, setUserCount] = useState<number>(456);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -163,6 +164,7 @@ export default function HomePage() {
   }
 
   return (
+
     <div className="w-full bg-black min-h-screen text-white">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-b from-zinc-900 to-black pt-16 pb-24 px-4 overflow-hidden">
@@ -311,7 +313,7 @@ export default function HomePage() {
               <div className="space-y-4">
                 {sheets.slice(0, 3).map(sheet => (
                   <Link key={sheet._id} href={`/sheets/${sheet._id}`}>
-                    <Card className="bg-zinc-900/60 border-zinc-800 hover:border-orange-500/50 transition-all">
+                    <Card className="bg-zinc-900/60 my-2 mx-2 border-zinc-800 hover:border-orange-500/50 transition-all">
                       <CardContent className="p-4">
                         <h4 className="font-medium mb-2 text-zinc-400">{sheet.title}</h4>
                         <div className="flex items-center justify-between">
@@ -348,7 +350,7 @@ export default function HomePage() {
                 {blogs.length > 0 ? (
                   blogs.slice(0, 3).map(blog => (
                     <Link key={blog._id} href={`/blogs/${blog._id}`}>
-                      <Card className="bg-zinc-900/60 border-zinc-800 hover:border-blue-500/50 transition-all">
+                      <Card className="bg-zinc-900/60 my-2 mx-2 border-zinc-800 hover:border-blue-500/50 transition-all">
                         <CardContent className="p-4">
                           <h4 className="font-medium mb-2 line-clamp-1 text-zinc-400">{blog.title}</h4>
                           <p className="text-xs text-zinc-400 line-clamp-2 mb-2">{blog.summary}</p>
@@ -385,7 +387,7 @@ export default function HomePage() {
                 {problems.length > 0 ? (
                   problems.slice(0, 3).map(problem => (
                     <Link key={problem._id} href={`/problems/${problem._id}`}>
-                      <Card className="bg-zinc-900/60 border-zinc-800 hover:border-green-500/50 transition-all">
+                      <Card className="bg-zinc-900/60 my-2 mx-2 border-zinc-800 hover:border-green-500/50 transition-all">
                         <CardContent className="p-4">
                           <h4 className="font-medium mb-2 text-zinc-400">{problem.title}</h4>
                           <div className="flex justify-between items-center">

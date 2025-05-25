@@ -126,7 +126,10 @@ export default function SheetList() {
     if (loading) {
         return (
             <div className="flex justify-center items-center min-h-[300px]">
-                <div className="w-8 h-8 border-t-2 border-b-2 border-primary rounded-full animate-spin"></div>
+                <div className="relative w-16 h-16">
+                    <div className="absolute top-0 left-0 w-full h-full border-t-4 border-b-4 border-orange-500/20 rounded-full"></div>
+                    <div className="absolute top-0 left-0 w-full h-full border-t-4 border-b-4 border-orange-500 rounded-full animate-spin"></div>
+                </div>
             </div>
         );
     }
@@ -134,8 +137,8 @@ export default function SheetList() {
     // Error state
     if (error) {
         return (
-            <div className="bg-red-100 border border-red-300 text-red-800 rounded-md p-4">
-                <p>{error}</p>
+            <div className="bg-red-900/30 border border-red-800/50 text-red-300 rounded-lg p-6 backdrop-blur-sm">
+                <p className="text-lg">{error}</p>
             </div>
         );
     }
@@ -144,8 +147,10 @@ export default function SheetList() {
     if (sheets.length === 0) {
         return (
             <div className="text-center py-16">
-                <BookOpen className="h-16 w-16 mx-auto text-zinc-600 mb-4" />
-                <h3 className="text-xl font-medium text-zinc-800 mb-2">No sheets found</h3>
+                <div className="flex justify-center mb-4">
+                    <BookOpen className="h-16 w-16 text-zinc-700" />
+                </div>
+                <h3 className="text-xl font-medium text-zinc-300 mb-2">No sheets found</h3>
                 <p className="text-zinc-500">
                     Sheets will appear here once they are published
                 </p>
@@ -158,24 +163,26 @@ export default function SheetList() {
             {sheets.map((sheet) => {
                 const { sectionsCount, topicsCount } = getCounts(sheet);
                 const completionPercentage = getCompletionPercentage(sheet._id, sheet.totalProblems);
+                const isCompleted = completionPercentage === 100;
 
                 return (
                     <Link key={sheet._id} href={`/sheets/${sheet._id}`}>
-                        <Card className="h-full flex flex-col hover:border-primary/50 transition-all cursor-pointer group">
+                        <Card className="h-full flex flex-col hover:border-orange-500/50 transition-all duration-300 group bg-zinc-900 border-zinc-800 hover:shadow-lg hover:shadow-orange-500/10 overflow-hidden">
                             <CardContent className="p-6 flex-grow">
                                 <div className="flex items-center space-x-2 mb-4">
                                     <Badge
                                         variant="outline"
                                         className={`
-                      ${completionPercentage === 100
-                                                ? 'bg-green-100 text-green-800 border-green-300'
+                      transition-colors duration-300
+                      ${isCompleted
+                                                ? 'bg-green-900/30 text-green-400 border-green-700/50'
                                                 : completionPercentage > 0
-                                                    ? 'bg-yellow-100 text-yellow-800 border-yellow-300'
-                                                    : 'bg-gray-100 text-gray-800 border-gray-300'
+                                                    ? 'bg-yellow-900/30 text-yellow-400 border-yellow-700/50'
+                                                    : 'bg-zinc-800 text-zinc-400 border-zinc-700'
                                             }
                     `}
                                     >
-                                        {completionPercentage === 100
+                                        {isCompleted
                                             ? 'Completed'
                                             : completionPercentage > 0
                                                 ? 'In Progress'
@@ -184,37 +191,70 @@ export default function SheetList() {
                                     </Badge>
                                 </div>
 
-                                <h2 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">{sheet.title}</h2>
-                                <p className="text-muted-foreground text-sm mb-6 line-clamp-2">{sheet.description}</p>
+                                <h2 className="text-xl text-white font-semibold mb-2 group-hover:text-orange-400 transition-colors duration-300">
+                                    {sheet.title}
+                                </h2>
+
+                                <p className="text-zinc-400 text-sm mb-6 line-clamp-2">
+                                    {sheet.description}
+                                </p>
 
                                 <div className="grid grid-cols-3 gap-2 mb-4">
-                                    <div className="flex flex-col items-center p-3 bg-muted/50 rounded-lg">
-                                        <p className="text-xl font-semibold text-primary">{sheet.totalProblems}</p>
-                                        <p className="text-xs text-muted-foreground">Problems</p>
+                                    <div className="flex flex-col items-center p-3 bg-zinc-800/70 rounded-lg border border-zinc-700 backdrop-blur-sm">
+                                        <p className="text-xl font-semibold text-orange-400">
+                                            {sheet.totalProblems}
+                                        </p>
+                                        <p className="text-xs text-zinc-400">Problems</p>
                                     </div>
-                                    <div className="flex flex-col items-center p-3 bg-muted/50 rounded-lg">
-                                        <p className="text-xl font-semibold text-blue-600">{sectionsCount}</p>
-                                        <p className="text-xs text-muted-foreground">Sections</p>
+                                    <div className="flex flex-col items-center p-3 bg-zinc-800/70 rounded-lg border border-zinc-700 backdrop-blur-sm">
+                                        <p className="text-xl font-semibold text-blue-400">
+                                            {sectionsCount}
+                                        </p>
+                                        <p className="text-xs text-zinc-400">Sections</p>
                                     </div>
-                                    <div className="flex flex-col items-center p-3 bg-muted/50 rounded-lg">
-                                        <p className="text-xl font-semibold text-green-600">{topicsCount}</p>
-                                        <p className="text-xs text-muted-foreground">Topics</p>
+                                    <div className="flex flex-col items-center p-3 bg-zinc-800/70 rounded-lg border border-zinc-700 backdrop-blur-sm">
+                                        <p className="text-xl font-semibold text-green-400">
+                                            {topicsCount}
+                                        </p>
+                                        <p className="text-xs text-zinc-400">Topics</p>
+                                    </div>
+                                </div>
+
+                                <div className="mt-4">
+                                    <div className="flex items-center justify-between text-xs text-zinc-400 mb-1">
+                                        <span>Progress</span>
+                                        <span>{completionPercentage}%</span>
+                                    </div>
+                                    <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+                                        <div
+                                            className={`h-full rounded-full transition-all duration-500 ${isCompleted
+                                                ? 'bg-gradient-to-r from-green-500 to-emerald-400'
+                                                : 'bg-gradient-to-r from-orange-500 to-amber-400'
+                                                }`}
+                                            style={{ width: `${completionPercentage}%` }}
+                                        />
                                     </div>
                                 </div>
                             </CardContent>
 
-                            <CardFooter className="p-4 border-t bg-muted/10">
+                            <CardFooter className="p-4 border-t border-zinc-800 bg-zinc-950/50 backdrop-blur-sm">
                                 <div className="flex items-center justify-between w-full">
-                                    <div className="flex items-center space-x-2">
-                                        <div className=" bg-muted rounded-full h-2 w-24">
+                                    {/* <div className="flex items-center space-x-2">
+                                        <div className="h-2 w-24 bg-zinc-800 rounded-full overflow-hidden">
                                             <div
-                                                className="bg-primary h-2 rounded-full"
+                                                className={`h-full rounded-full transition-all duration-500 ${isCompleted
+                                                        ? 'bg-green-500'
+                                                        : 'bg-orange-500'
+                                                    }`}
                                                 style={{ width: `${completionPercentage}%` }}
                                             />
                                         </div>
-                                        <span className="text-sm text-muted-foreground">{completionPercentage}%</span>
-                                    </div>
-                                    <ArrowRight size={16} className="text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                                        <span className="text-sm text-zinc-400">{completionPercentage}%</span>
+                                    </div> */}
+                                    <ArrowRight
+                                        size={16}
+                                        className="text-zinc-500 group-hover:text-orange-400 group-hover:translate-x-1 transition-all duration-300"
+                                    />
                                 </div>
                             </CardFooter>
                         </Card>

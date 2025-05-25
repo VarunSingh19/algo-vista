@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  location: { type: String, required: true },
-  bio: { type: String, required: true },
+  location: { type: String, default: "" },
+  bio: { type: String, default: "" },
   email: { type: String, required: true, unique: true },
   passwordHash: { type: String, required: true },
   role: { type: String, enum: ["user", "admin"], default: "user" },
