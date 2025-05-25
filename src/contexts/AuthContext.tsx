@@ -10,6 +10,8 @@ export interface User {
   email: string;
   role: 'user' | 'admin';
   avatarUrl: string;
+  location: string;
+  bio: string;
   socialLinks: {
     github: string;
     twitter: string;

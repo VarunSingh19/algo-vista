@@ -103,18 +103,21 @@ export default function SheetList() {
 
     // Count sections, topics, and problems for a sheet
     const getCounts = (sheet: Sheet) => {
+        // If sections is missing or not an array, return 0 for both counts
+        if (!sheet.sections || !Array.isArray(sheet.sections)) {
+            return { sectionsCount: 0, topicsCount: 0 };
+        }
+
         let topicsCount = 0;
-
-        if (!sheet.sections) return { sectionsCount: 0, topicsCount: 0 };
-
         sheet.sections.forEach(section => {
-            if (section.topics) {
+            // Only add to topicsCount if topics is an array
+            if (Array.isArray(section.topics)) {
                 topicsCount += section.topics.length;
             }
         });
 
         return {
-            sectionsCount: sheet.sections?.length || 0,
+            sectionsCount: sheet.sections.length,
             topicsCount
         };
     };
@@ -203,7 +206,7 @@ export default function SheetList() {
                             <CardFooter className="p-4 border-t bg-muted/10">
                                 <div className="flex items-center justify-between w-full">
                                     <div className="flex items-center space-x-2">
-                                        <div className="w-full bg-muted rounded-full h-2 w-24">
+                                        <div className=" bg-muted rounded-full h-2 w-24">
                                             <div
                                                 className="bg-primary h-2 rounded-full"
                                                 style={{ width: `${completionPercentage}%` }}
