@@ -9,8 +9,7 @@ import apiClient from '@/lib/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, Clock, Eye, User, Tag, ChevronLeft, Edit, Trash, Share2 } from 'lucide-react';
+import { Clock, Eye, User, Tag, ChevronLeft, Edit, Trash, Share2 } from 'lucide-react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -65,8 +64,9 @@ export default function BlogDetailPage() {
                         console.error('Error marking blog as read:', error);
                     }
                 }
-            } catch (err: any) {
-                setError(err.response?.data?.error || 'Failed to fetch blog');
+            } catch (err: Error | unknown) {
+                const errorMessage = err instanceof Error ? err.message : 'Failed to fetch blog';
+                setError(errorMessage);
             } finally {
                 setLoading(false);
             }
@@ -93,7 +93,7 @@ export default function BlogDetailPage() {
                         const tagOverlap = b.tags.filter(tag => blog.tags.includes(tag)).length;
                         return { ...b, tagOverlap };
                     })
-                    .sort((a: any, b: any) => b.tagOverlap - a.tagOverlap || b.views - a.views)
+                    .sort((a: Blog & { tagOverlap: number }, b: Blog & { tagOverlap: number }) => b.tagOverlap - a.tagOverlap || b.views - a.views)
                     .slice(0, 3);
 
                 setRelatedBlogs(related);

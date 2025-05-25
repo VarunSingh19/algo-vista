@@ -14,7 +14,7 @@ async function isAdmin(request: NextRequest) {
   try {
     await dbConnect();
 
-    const token = cookies().get("jwt")?.value;
+    const token = (await cookies()).get("jwt")?.value;
 
     if (!token) {
       return false;
@@ -29,8 +29,25 @@ async function isAdmin(request: NextRequest) {
   }
 }
 
+interface Problem {
+  id: string;
+  difficulty?: "Easy" | "Medium" | "Hard";
+}
+
+interface Topic {
+  problems?: Problem[];
+}
+
+interface Section {
+  topics?: Topic[];
+}
+
+interface SheetData {
+  sections?: Section[];
+}
+
 // Calculate difficulties for a sheet
-async function calculateDifficulties(sheet: any) {
+async function calculateDifficulties(sheet: SheetData) {
   const difficulties: Record<string, { total: number; problems: string[] }> = {
     Easy: { total: 0, problems: [] },
     Medium: { total: 0, problems: [] },

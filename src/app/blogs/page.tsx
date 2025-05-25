@@ -44,8 +44,8 @@ export default function BlogsPage() {
                 setLoading(true);
                 const { data } = await apiClient.getAllBlogs();
                 setBlogs(data.data);
-            } catch (err: any) {
-                setError(err.response?.data?.error || 'Failed to fetch blogs');
+            } catch (err: unknown) {
+                setError(err instanceof Error ? err.message : 'Failed to fetch blogs');
             } finally {
                 setLoading(false);
             }
@@ -61,9 +61,11 @@ export default function BlogsPage() {
         const fetchReadBlogs = async () => {
             try {
                 const { data } = await apiClient.getAdminStats();
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const blogReads = data.blogReads.filter((read: any) => read.userId === user._id);
 
                 const readBlogsMap: Record<string, boolean> = {};
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 blogReads.forEach((read: any) => {
                     readBlogsMap[read.blogId] = true;
                 });

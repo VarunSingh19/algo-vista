@@ -1,3 +1,344 @@
+// // 'use client';
+
+// // import React from 'react';
+// // import { useRouter, usePathname } from 'next/navigation';
+// // import Link from 'next/link';
+// // import { useAuth } from '@/contexts/AuthContext';
+// // import { Button } from '@/components/ui/button';
+// // import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+// // import {
+// //   Menu,
+// //   X,
+// //   LogOut,
+// //   Home,
+// //   User,
+// //   FilePen,
+// //   ShieldCheck,
+// //   BookOpen,
+// //   ChevronDown,
+// //   GraduationCap,
+// //   LayoutDashboard,
+// //   Code
+// // } from 'lucide-react';
+// // import {
+// //   DropdownMenu,
+// //   DropdownMenuContent,
+// //   DropdownMenuItem,
+// //   DropdownMenuLabel,
+// //   DropdownMenuSeparator,
+// //   DropdownMenuTrigger,
+// // } from "@/components/ui/dropdown-menu";
+
+// // export default function Layout({ children }: { children: React.ReactNode }) {
+// //   const { user, logout } = useAuth();
+// //   const router = useRouter();
+// //   const pathname = usePathname();
+// //   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+
+// //   const handleLogout = async () => {
+// //     try {
+// //       await logout();
+// //       router.push('/login');
+// //     } catch (error) {
+// //       console.error('Logout error:', error);
+// //     }
+// //   };
+
+// //   // Navigation links configuration
+// //   const navLinks = [
+// //     {
+// //       name: 'Home',
+// //       href: '/',
+// //       icon: <Home size={16} className="mr-2" />,
+// //     },
+// //     {
+// //       name: 'Sheets',
+// //       href: '/sheets',
+// //       icon: <BookOpen size={16} className="mr-2" />,
+// //     },
+// //   ];
+
+// //   const resourcesLinks = [
+// //     {
+// //       name: 'DSA Sheets',
+// //       href: '/sheets',
+// //       icon: <FilePen size={16} className="mr-2" />,
+// //       color: 'text-orange-500',
+// //     },
+// //     {
+// //       name: 'System Design',
+// //       href: '/sheets',
+// //       icon: <LayoutDashboard size={16} className="mr-2" />,
+// //       color: 'text-blue-500',
+// //     },
+// //     {
+// //       name: 'Coding Problems',
+// //       href: '/sheets',
+// //       icon: <Code size={16} className="mr-2" />,
+// //       color: 'text-green-500',
+// //     },
+// //   ];
+
+// //   return (
+// //     <div className="min-h-screen flex flex-col bg-background">
+// //       {/* Navbar */}
+// //       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+// //         <div className="container flex h-14 items-center">
+// //           {/* Logo */}
+// //           <Link href="/" className="flex items-center mr-6">
+// //             <span className="font-bold text-xl">AlgoVista</span>
+// //           </Link>
+
+// //           {/* Desktop navigation */}
+// //           <nav className="hidden md:flex items-center space-x-4 lg:space-x-6 mx-6">
+// //             {navLinks.map((link) => (
+// //               <Link
+// //                 key={link.name}
+// //                 href={link.href}
+// //                 className={`text-sm font-medium transition-colors hover:text-primary ${pathname === link.href ? 'text-foreground' : 'text-muted-foreground'
+// //                   }`}
+// //               >
+// //                 {link.name}
+// //               </Link>
+// //             ))}
+
+// //             {/* Resources dropdown */}
+// //             <DropdownMenu>
+// //               <DropdownMenuTrigger asChild>
+// //                 <button className="flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+// //                   Resources
+// //                   <ChevronDown size={16} className="ml-1" />
+// //                 </button>
+// //               </DropdownMenuTrigger>
+// //               <DropdownMenuContent align="start" className="w-56">
+// //                 <DropdownMenuLabel>Learning Resources</DropdownMenuLabel>
+// //                 <DropdownMenuSeparator />
+// //                 {resourcesLinks.map((link) => (
+// //                   <DropdownMenuItem key={link.name} asChild>
+// //                     <Link href={link.href} className={`flex items-center ${link.color}`}>
+// //                       {link.icon}
+// //                       {link.name}
+// //                     </Link>
+// //                   </DropdownMenuItem>
+// //                 ))}
+// //               </DropdownMenuContent>
+// //             </DropdownMenu>
+
+// //             {user?.role === 'admin' && (
+// //               <Link
+// //                 href="/admin"
+// //                 className={`text-sm font-medium transition-colors hover:text-primary ${pathname === '/admin' ? 'text-foreground' : 'text-muted-foreground'
+// //                   }`}
+// //               >
+// //                 Admin
+// //               </Link>
+// //             )}
+// //           </nav>
+
+// //           {/* Right side - Auth/Profile section */}
+// //           <div className="flex items-center space-x-4 ml-auto">
+// //             {user ? (
+// //               <DropdownMenu>
+// //                 <DropdownMenuTrigger asChild>
+// //                   <button className="flex items-center space-x-2 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+// //                     <Avatar className="h-8 w-8">
+// //                       <AvatarImage src={user.avatarUrl} alt={user.name} />
+// //                       <AvatarFallback className="text-xs">
+// //                         {user.name.charAt(0).toUpperCase()}
+// //                       </AvatarFallback>
+// //                     </Avatar>
+// //                     <span className="hidden lg:inline-block text-sm font-medium">
+// //                       {user.name.split(' ')[0]}
+// //                     </span>
+// //                   </button>
+// //                 </DropdownMenuTrigger>
+// //                 <DropdownMenuContent align="end" className="w-56">
+// //                   <DropdownMenuLabel className="font-normal">
+// //                     <div className="flex flex-col space-y-1">
+// //                       <p className="text-sm font-medium leading-none">{user.name}</p>
+// //                       <p className="text-xs leading-none text-muted-foreground">
+// //                         {user.email}
+// //                       </p>
+// //                     </div>
+// //                   </DropdownMenuLabel>
+// //                   <DropdownMenuSeparator />
+// //                   <DropdownMenuItem asChild>
+// //                     <Link href="/profile" className="flex items-center cursor-pointer">
+// //                       <User size={16} className="mr-2" />
+// //                       Profile
+// //                     </Link>
+// //                   </DropdownMenuItem>
+// //                   {user.role === 'admin' && (
+// //                     <DropdownMenuItem asChild>
+// //                       <Link href="/admin" className="flex items-center cursor-pointer">
+// //                         <ShieldCheck size={16} className="mr-2" />
+// //                         Admin Panel
+// //                       </Link>
+// //                     </DropdownMenuItem>
+// //                   )}
+// //                   <DropdownMenuSeparator />
+// //                   <DropdownMenuItem
+// //                     className="flex items-center cursor-pointer text-destructive focus:text-destructive"
+// //                     onClick={handleLogout}
+// //                   >
+// //                     <LogOut size={16} className="mr-2" />
+// //                     Logout
+// //                   </DropdownMenuItem>
+// //                 </DropdownMenuContent>
+// //               </DropdownMenu>
+// //             ) : (
+// //               <div className="hidden md:flex space-x-2">
+// //                 <Button asChild variant="ghost" size="sm">
+// //                   <Link href="/login">Log in</Link>
+// //                 </Button>
+// //                 <Button asChild size="sm" className="bg-orange-500 hover:bg-orange-600">
+// //                   <Link href="/register">Sign up</Link>
+// //                 </Button>
+// //               </div>
+// //             )}
+
+// //             {/* Mobile menu button */}
+// //             <Button
+// //               variant="ghost"
+// //               size="icon"
+// //               className="md:hidden"
+// //               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+// //             >
+// //               {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+// //             </Button>
+// //           </div>
+// //         </div>
+// //       </header>
+
+// //       {/* Mobile menu */}
+// //       {mobileMenuOpen && (
+// //         <div className="fixed inset-0 top-14 z-40 w-full bg-background md:hidden">
+// //           <div className="container py-4 space-y-4">
+// //             <nav className="grid gap-2">
+// //               {navLinks.map((link) => (
+// //                 <Link
+// //                   key={link.name}
+// //                   href={link.href}
+// //                   className={`flex items-center px-3 py-2 text-sm rounded-md ${pathname === link.href
+// //                     ? 'bg-accent text-accent-foreground'
+// //                     : 'hover:bg-accent hover:text-accent-foreground'
+// //                     }`}
+// //                   onClick={() => setMobileMenuOpen(false)}
+// //                 >
+// //                   {link.icon}
+// //                   {link.name}
+// //                 </Link>
+// //               ))}
+
+// //               {/* Resources section in mobile */}
+// //               <div className="px-3 py-2">
+// //                 <p className="text-sm font-medium text-muted-foreground mb-2">Resources</p>
+// //                 <div className="grid gap-1 pl-2">
+// //                   {resourcesLinks.map((link) => (
+// //                     <Link
+// //                       key={link.name}
+// //                       href={link.href}
+// //                       className={`flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent hover:text-accent-foreground ${link.color}`}
+// //                       onClick={() => setMobileMenuOpen(false)}
+// //                     >
+// //                       {link.icon}
+// //                       {link.name}
+// //                     </Link>
+// //                   ))}
+// //                 </div>
+// //               </div>
+
+// //               {user?.role === 'admin' && (
+// //                 <Link
+// //                   href="/admin"
+// //                   className="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent hover:text-accent-foreground"
+// //                   onClick={() => setMobileMenuOpen(false)}
+// //                 >
+// //                   <ShieldCheck size={16} className="mr-2" />
+// //                   Admin Panel
+// //                 </Link>
+// //               )}
+// //             </nav>
+
+// //             {!user && (
+// //               <div className="grid grid-cols-2 gap-2">
+// //                 <Button asChild variant="outline" size="sm">
+// //                   <Link href="/login">Log in</Link>
+// //                 </Button>
+// //                 <Button asChild size="sm" className="bg-orange-500 hover:bg-orange-600">
+// //                   <Link href="/register">Sign up</Link>
+// //                 </Button>
+// //               </div>
+// //             )}
+
+// //             {user && (
+// //               <div className="border-t pt-4">
+// //                 <div className="flex items-center justify-between py-2">
+// //                   <div className="flex items-center">
+// //                     <Avatar className="h-8 w-8 mr-2">
+// //                       <AvatarImage src={user.avatarUrl} alt={user.name} />
+// //                       <AvatarFallback className="text-xs">
+// //                         {user.name.charAt(0).toUpperCase()}
+// //                       </AvatarFallback>
+// //                     </Avatar>
+// //                     <div>
+// //                       <p className="text-sm font-medium">{user.name}</p>
+// //                       <p className="text-xs text-muted-foreground">{user.email}</p>
+// //                     </div>
+// //                   </div>
+// //                 </div>
+// //                 <div className="grid gap-1 mt-2">
+// //                   <Link
+// //                     href="/profile"
+// //                     className="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent hover:text-accent-foreground"
+// //                     onClick={() => setMobileMenuOpen(false)}
+// //                   >
+// //                     <User size={16} className="mr-2" />
+// //                     Profile
+// //                   </Link>
+// //                   <Button
+// //                     variant="ghost"
+// //                     size="sm"
+// //                     className="flex items-center justify-start px-3 text-left text-destructive hover:bg-destructive/10 hover:text-destructive"
+// //                     onClick={() => {
+// //                       handleLogout();
+// //                       setMobileMenuOpen(false);
+// //                     }}
+// //                   >
+// //                     <LogOut size={16} className="mr-2" />
+// //                     Logout
+// //                   </Button>
+// //                 </div>
+// //               </div>
+// //             )}
+// //           </div>
+// //         </div>
+// //       )}
+
+// //       {/* Main Content */}
+// //       <main className="flex-1">{children}</main>
+
+// //       {/* Footer */}
+// //       <footer className="border-t py-6 md:py-8 bg-zinc-950 text-zinc-400">
+// //         <div className="container flex flex-col md:flex-row items-center justify-between gap-4">
+// //           <div className="flex flex-col items-center md:items-start">
+// //             <div className="font-bold text-white">AlgoVista</div>
+// //             <p className="text-xs">Mastering algorithms, one problem at a time</p>
+// //           </div>
+// //           <div className="flex space-x-4 text-xs">
+// //             <Link href="/about" className="hover:text-white">About</Link>
+// //             <Link href="/contact" className="hover:text-white">Contact</Link>
+// //             <Link href="/privacy" className="hover:text-white">Privacy</Link>
+// //             <Link href="/terms" className="hover:text-white">Terms</Link>
+// //           </div>
+// //           <div className="text-xs text-center md:text-right">
+// //             © {new Date().getFullYear()} AlgoVista. All rights reserved.
+// //           </div>
+// //         </div>
+// //       </footer>
+// //     </div>
+// //   );
+// // }
 // 'use client';
 
 // import React from 'react';
@@ -18,7 +359,8 @@
 //   ChevronDown,
 //   GraduationCap,
 //   LayoutDashboard,
-//   Code
+//   Code,
+//   ClipboardList
 // } from 'lucide-react';
 // import {
 //   DropdownMenu,
@@ -56,6 +398,12 @@
 //       href: '/sheets',
 //       icon: <BookOpen size={16} className="mr-2" />,
 //     },
+//     {
+//       name: 'Submissions',
+//       href: '/submissions',
+//       icon: <ClipboardList size={16} className="mr-2" />,
+//       requiresAuth: true, // Only show this link if user is authenticated
+//     },
 //   ];
 
 //   const resourcesLinks = [
@@ -66,14 +414,14 @@
 //       color: 'text-orange-500',
 //     },
 //     {
-//       name: 'System Design',
-//       href: '/sheets',
+//       name: 'Tech Blogs',
+//       href: '/blogs',
 //       icon: <LayoutDashboard size={16} className="mr-2" />,
 //       color: 'text-blue-500',
 //     },
 //     {
 //       name: 'Coding Problems',
-//       href: '/sheets',
+//       href: '/problems',
 //       icon: <Code size={16} className="mr-2" />,
 //       color: 'text-green-500',
 //     },
@@ -91,16 +439,21 @@
 
 //           {/* Desktop navigation */}
 //           <nav className="hidden md:flex items-center space-x-4 lg:space-x-6 mx-6">
-//             {navLinks.map((link) => (
-//               <Link
-//                 key={link.name}
-//                 href={link.href}
-//                 className={`text-sm font-medium transition-colors hover:text-primary ${pathname === link.href ? 'text-foreground' : 'text-muted-foreground'
-//                   }`}
-//               >
-//                 {link.name}
-//               </Link>
-//             ))}
+//             {navLinks.map((link) => {
+//               // Skip links that require auth when user is not logged in
+//               if (link.requiresAuth && !user) return null;
+
+//               return (
+//                 <Link
+//                   key={link.name}
+//                   href={link.href}
+//                   className={`text-sm font-medium transition-colors hover:text-primary ${pathname === link.href ? 'text-foreground' : 'text-muted-foreground'
+//                     }`}
+//                 >
+//                   {link.name}
+//                 </Link>
+//               );
+//             })}
 
 //             {/* Resources dropdown */}
 //             <DropdownMenu>
@@ -168,6 +521,12 @@
 //                       Profile
 //                     </Link>
 //                   </DropdownMenuItem>
+//                   <DropdownMenuItem asChild>
+//                     <Link href="/submissions" className="flex items-center cursor-pointer">
+//                       <ClipboardList size={16} className="mr-2" />
+//                       My Submissions
+//                     </Link>
+//                   </DropdownMenuItem>
 //                   {user.role === 'admin' && (
 //                     <DropdownMenuItem asChild>
 //                       <Link href="/admin" className="flex items-center cursor-pointer">
@@ -215,20 +574,25 @@
 //         <div className="fixed inset-0 top-14 z-40 w-full bg-background md:hidden">
 //           <div className="container py-4 space-y-4">
 //             <nav className="grid gap-2">
-//               {navLinks.map((link) => (
-//                 <Link
-//                   key={link.name}
-//                   href={link.href}
-//                   className={`flex items-center px-3 py-2 text-sm rounded-md ${pathname === link.href
-//                     ? 'bg-accent text-accent-foreground'
-//                     : 'hover:bg-accent hover:text-accent-foreground'
-//                     }`}
-//                   onClick={() => setMobileMenuOpen(false)}
-//                 >
-//                   {link.icon}
-//                   {link.name}
-//                 </Link>
-//               ))}
+//               {navLinks.map((link) => {
+//                 // Skip links that require auth when user is not logged in
+//                 if (link.requiresAuth && !user) return null;
+
+//                 return (
+//                   <Link
+//                     key={link.name}
+//                     href={link.href}
+//                     className={`flex items-center px-3 py-2 text-sm rounded-md ${pathname === link.href
+//                       ? 'bg-accent text-accent-foreground'
+//                       : 'hover:bg-accent hover:text-accent-foreground'
+//                       }`}
+//                     onClick={() => setMobileMenuOpen(false)}
+//                   >
+//                     {link.icon}
+//                     {link.name}
+//                   </Link>
+//                 );
+//               })}
 
 //               {/* Resources section in mobile */}
 //               <div className="px-3 py-2">
@@ -296,6 +660,14 @@
 //                     <User size={16} className="mr-2" />
 //                     Profile
 //                   </Link>
+//                   <Link
+//                     href="/submissions"
+//                     className="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent hover:text-accent-foreground"
+//                     onClick={() => setMobileMenuOpen(false)}
+//                   >
+//                     <ClipboardList size={16} className="mr-2" />
+//                     My Submissions
+//                   </Link>
 //                   <Button
 //                     variant="ghost"
 //                     size="sm"
@@ -339,6 +711,9 @@
 //     </div>
 //   );
 // }
+
+
+
 'use client';
 
 import React from 'react';
@@ -360,7 +735,13 @@ import {
   GraduationCap,
   LayoutDashboard,
   Code,
-  ClipboardList
+  ClipboardList,
+  Sparkles,
+  Zap,
+  Heart,
+  Mail,
+  Shield,
+  FileText
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -376,6 +757,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [isScrolled, setIsScrolled] = React.useState(false);
+
+  // Handle scroll effect for navbar
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -392,17 +783,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       name: 'Home',
       href: '/',
       icon: <Home size={16} className="mr-2" />,
+      gradient: 'from-blue-500 to-purple-600'
     },
     {
       name: 'Sheets',
       href: '/sheets',
       icon: <BookOpen size={16} className="mr-2" />,
+      gradient: 'from-emerald-500 to-teal-600'
     },
     {
       name: 'Submissions',
       href: '/submissions',
       icon: <ClipboardList size={16} className="mr-2" />,
-      requiresAuth: true, // Only show this link if user is authenticated
+      requiresAuth: true,
+      gradient: 'from-orange-500 to-red-600'
     },
   ];
 
@@ -411,66 +805,110 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       name: 'DSA Sheets',
       href: '/sheets',
       icon: <FilePen size={16} className="mr-2" />,
-      color: 'text-orange-500',
+      gradient: 'from-orange-500 to-amber-500',
+      description: 'Curated problem sets'
     },
     {
       name: 'Tech Blogs',
       href: '/blogs',
       icon: <LayoutDashboard size={16} className="mr-2" />,
-      color: 'text-blue-500',
+      gradient: 'from-blue-500 to-indigo-500',
+      description: 'Latest tech insights'
     },
     {
       name: 'Coding Problems',
       href: '/problems',
       icon: <Code size={16} className="mr-2" />,
-      color: 'text-green-500',
+      gradient: 'from-green-500 to-emerald-500',
+      description: 'Practice challenges'
     },
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
+
+
+      {/* Animated background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-orange-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-gradient-to-br from-orange-400/20 to-cyan-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute -bottom-40 right-1/3 w-80 h-80 bg-gradient-to-br from-emerald-400/20 to-teal-400/20 rounded-full blur-3xl animate-pulse delay-2000"></div>
+      </div>
+
       {/* Navbar */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
-          {/* Logo */}
-          <Link href="/" className="flex items-center mr-6">
-            <span className="font-bold text-xl">AlgoVista</span>
+      <header className={`sticky top-0 z-50 w-full transition-all duration-500 ${isScrolled
+        ? 'bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 shadow-lg shadow-slate-200/20 dark:shadow-slate-900/20'
+        : 'bg-transparent'
+        }`}>
+
+        <div className="container flex h-16 items-center">
+          {/* Logo with animation */}
+          <Link href="/" className="flex items-center mr-8 group">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-orange-600 rounded-lg blur opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative bg-gradient-to-r from-orange-600 to-orange-600 text-white px-3 py-2 rounded-lg">
+                <Sparkles size={20} className="inline mr-2 animate-pulse" />
+                <span className="font-bold text-xl bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                  AlgoVista
+                </span>
+              </div>
+            </div>
           </Link>
 
           {/* Desktop navigation */}
-          <nav className="hidden md:flex items-center space-x-4 lg:space-x-6 mx-6">
+          <nav className="hidden md:flex items-center space-x-8 mx-6">
             {navLinks.map((link) => {
-              // Skip links that require auth when user is not logged in
               if (link.requiresAuth && !user) return null;
+              const isActive = pathname === link.href;
 
               return (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`text-sm font-medium transition-colors hover:text-primary ${pathname === link.href ? 'text-foreground' : 'text-muted-foreground'
+                  className={`relative text-sm font-medium transition-all duration-300 hover:scale-105 group ${isActive
+                    ? 'text-orange-600 dark:text-orange-400'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                     }`}
                 >
-                  {link.name}
+                  <span className="relative z-10 flex items-center">
+                    {link.icon}
+                    {link.name}
+                  </span>
+                  {isActive && (
+                    <div className={`absolute inset-0 bg-gradient-to-r ${link.gradient} opacity-10 rounded-lg scale-110 animate-pulse`}></div>
+                  )}
+                  <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-orange-500 transition-all duration-300 group-hover:w-full"></div>
                 </Link>
               );
             })}
 
-            {/* Resources dropdown */}
+            {/* Enhanced Resources dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+                <button className="flex items-center text-sm font-medium text-slate-600 dark:text-slate-300 transition-all duration-300 hover:text-slate-900 dark:hover:text-white hover:scale-105 group">
+                  <Zap size={16} className="mr-2 group-hover:animate-pulse" />
                   Resources
-                  <ChevronDown size={16} className="ml-1" />
+                  <ChevronDown size={16} className="ml-1 transition-transform duration-300 group-hover:rotate-180" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56">
-                <DropdownMenuLabel>Learning Resources</DropdownMenuLabel>
-                <DropdownMenuSeparator />
+              <DropdownMenuContent align="start" className="w-72 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-slate-200/50 dark:border-slate-700/50 shadow-2xl">
+                <DropdownMenuLabel className="text-slate-900 dark:text-white font-semibold">
+                  <div className="flex items-center">
+                    <GraduationCap size={16} className="mr-2 text-orange-500" />
+                    Learning Resources
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-slate-200/50 dark:bg-slate-700/50" />
                 {resourcesLinks.map((link) => (
-                  <DropdownMenuItem key={link.name} asChild>
-                    <Link href={link.href} className={`flex items-center ${link.color}`}>
-                      {link.icon}
-                      {link.name}
+                  <DropdownMenuItem key={link.name} asChild className="group">
+                    <Link href={link.href} className="flex items-start p-3 rounded-lg transition-all duration-300 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                      <div className={`p-2 rounded-lg bg-gradient-to-r ${link.gradient} text-white mr-3 group-hover:scale-110 transition-transform duration-300`}>
+                        {link.icon}
+                      </div>
+                      <div>
+                        <div className="font-medium text-slate-900 dark:text-white">{link.name}</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">{link.description}</div>
+                      </div>
                     </Link>
                   </DropdownMenuItem>
                 ))}
@@ -480,234 +918,432 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {user?.role === 'admin' && (
               <Link
                 href="/admin"
-                className={`text-sm font-medium transition-colors hover:text-primary ${pathname === '/admin' ? 'text-foreground' : 'text-muted-foreground'
+                className={`flex items-center text-sm font-medium transition-all duration-300 hover:scale-105 px-3 py-2 rounded-lg ${pathname === '/admin'
+                  ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
               >
+                <ShieldCheck size={16} className="mr-2" />
                 Admin
               </Link>
             )}
           </nav>
 
-          {/* Right side - Auth/Profile section */}
+          {/* Enhanced Auth/Profile section */}
           <div className="flex items-center space-x-4 ml-auto">
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center space-x-2 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.avatarUrl} alt={user.name} />
-                      <AvatarFallback className="text-xs">
-                        {user.name.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="hidden lg:inline-block text-sm font-medium">
-                      {user.name.split(' ')[0]}
-                    </span>
+                  <button className="flex items-center space-x-3 rounded-full p-1 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900">
+                    <div className="relative">
+                      <Avatar className="h-10 w-10 ring-2 ring-gradient-to-r from-orange-500 to-orange-500 ring-offset-2 dark:ring-offset-slate-900">
+                        <AvatarImage src={user.avatarUrl} alt={user.name} />
+                        <AvatarFallback className="text-sm font-semibold bg-gradient-to-r from-orange-500 to-orange-500 text-white">
+                          {user.name.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse"></div>
+                    </div>
+                    {/* <div className="hidden lg:block text-left">
+                      <div className="text-sm font-medium text-slate-900 dark:text-white">
+                        {user.name.split(' ')[0]}
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">
+                        {user.role}
+                      </div>
+                    </div> */}
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user.name}</p>
-                      <p className="text-xs leading-none text-muted-foreground">
-                        {user.email}
-                      </p>
+                <DropdownMenuContent align="end" className="w-64 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-slate-200/50 dark:border-slate-700/50 shadow-2xl">
+                  <DropdownMenuLabel className="font-normal p-4">
+                    <div className="flex items-center space-x-3">
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src={user.avatarUrl} alt={user.name} />
+                        <AvatarFallback className="bg-gradient-to-r from-orange-500 to-orange-500 text-white font-semibold">
+                          {user.name.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">{user.name}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
+                        <div className="flex items-center mt-1">
+                          <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                          <span className="text-xs text-green-600 dark:text-green-400">Online</span>
+                        </div>
+                      </div>
                     </div>
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="bg-slate-200/50 dark:bg-slate-700/50" />
                   <DropdownMenuItem asChild>
-                    <Link href="/profile" className="flex items-center cursor-pointer">
-                      <User size={16} className="mr-2" />
-                      Profile
+                    <Link href="/profile" className="flex items-center cursor-pointer p-3 transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-950/50 dark:hover:to-purple-950/50">
+                      <div className="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white mr-3">
+                        <User size={14} />
+                      </div>
+                      <div>
+                        <div className="font-medium">Profile</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">Manage your account</div>
+                      </div>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/submissions" className="flex items-center cursor-pointer">
-                      <ClipboardList size={16} className="mr-2" />
-                      My Submissions
+                    <Link href="/submissions" className="flex items-center cursor-pointer p-3 transition-all duration-300 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-950/50 dark:hover:to-teal-950/50">
+                      <div className="p-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white mr-3">
+                        <ClipboardList size={14} />
+                      </div>
+                      <div>
+                        <div className="font-medium">My Submissions</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">View your progress</div>
+                      </div>
                     </Link>
                   </DropdownMenuItem>
                   {user.role === 'admin' && (
                     <DropdownMenuItem asChild>
-                      <Link href="/admin" className="flex items-center cursor-pointer">
-                        <ShieldCheck size={16} className="mr-2" />
-                        Admin Panel
+                      <Link href="/admin" className="flex items-center cursor-pointer p-3 transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 dark:hover:from-red-950/50 dark:hover:to-pink-950/50">
+                        <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-pink-500 text-white mr-3">
+                          <ShieldCheck size={14} />
+                        </div>
+                        <div>
+                          <div className="font-medium">Admin Panel</div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400">System management</div>
+                        </div>
                       </Link>
                     </DropdownMenuItem>
                   )}
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="bg-slate-200/50 dark:bg-slate-700/50" />
                   <DropdownMenuItem
-                    className="flex items-center cursor-pointer text-destructive focus:text-destructive"
+                    className="flex items-center cursor-pointer p-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300"
                     onClick={handleLogout}
                   >
-                    <LogOut size={16} className="mr-2" />
-                    Logout
+                    <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-pink-500 text-white mr-3">
+                      <LogOut size={14} />
+                    </div>
+                    <div>
+                      <div className="font-medium">Logout</div>
+                      <div className="text-xs opacity-75">Sign out of your account</div>
+                    </div>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <div className="hidden md:flex space-x-2">
-                <Button asChild variant="ghost" size="sm">
+              <div className="hidden md:flex space-x-3">
+                <Button asChild variant="ghost" size="sm" className="transition-all duration-300 hover:scale-105 hover:bg-slate-100 dark:hover:bg-slate-800">
                   <Link href="/login">Log in</Link>
                 </Button>
-                <Button asChild size="sm" className="bg-orange-500 hover:bg-orange-600">
-                  <Link href="/register">Sign up</Link>
+                <Button asChild size="sm" className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 shadow-lg hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 hover:scale-105">
+                  <Link href="/register" className="flex items-center">
+                    <Sparkles size={16} className="mr-2" />
+                    Sign up
+                  </Link>
                 </Button>
               </div>
             )}
 
-            {/* Mobile menu button */}
+            {/* Enhanced Mobile menu button */}
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
+              className="md:hidden relative transition-all duration-300 hover:scale-110 hover:bg-slate-100 dark:hover:bg-slate-800"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              <div className="relative w-6 h-6">
+                <span className={`absolute h-0.5 w-6 bg-slate-600 dark:bg-slate-300 transform transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 top-3' : 'top-1'}`}></span>
+                <span className={`absolute h-0.5 w-6 bg-slate-600 dark:bg-slate-300 top-3 transition-all duration-300 ${mobileMenuOpen ? 'opacity-0' : 'opacity-100'}`}></span>
+                <span className={`absolute h-0.5 w-6 bg-slate-600 dark:bg-slate-300 transform transition-all duration-300 ${mobileMenuOpen ? '-rotate-45 top-3' : 'top-5'}`}></span>
+              </div>
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Mobile menu */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 top-14 z-40 w-full bg-background md:hidden">
-          <div className="container py-4 space-y-4">
-            <nav className="grid gap-2">
-              {navLinks.map((link) => {
-                // Skip links that require auth when user is not logged in
-                if (link.requiresAuth && !user) return null;
+      {/* Enhanced Mobile menu */}
+      <div className={`fixed inset-0 top-16 z-40 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl md:hidden transition-all duration-500 ${mobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+        }`}>
+        <div className="container py-6 space-y-6 h-full overflow-y-auto">
+          <nav className="space-y-2">
+            {navLinks.map((link, index) => {
+              if (link.requiresAuth && !user) return null;
+              const isActive = pathname === link.href;
 
-                return (
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={`flex items-center px-4 py-3 text-sm rounded-xl transition-all duration-300 hover:scale-105 ${isActive
+                    ? `bg-gradient-to-r ${link.gradient} text-white shadow-lg`
+                    : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+                    }`}
+                  style={{ animationDelay: `${index * 100}ms` }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {link.icon}
+                  {link.name}
+                </Link>
+              );
+            })}
+
+            {/* Resources section in mobile */}
+            <div className="px-4 py-3">
+              <p className="text-sm font-semibold text-slate-900 dark:text-white mb-3 flex items-center">
+                <GraduationCap size={16} className="mr-2 text-blue-500" />
+                Resources
+              </p>
+              <div className="space-y-2 pl-2">
+                {resourcesLinks.map((link, index) => (
                   <Link
                     key={link.name}
                     href={link.href}
-                    className={`flex items-center px-3 py-2 text-sm rounded-md ${pathname === link.href
-                      ? 'bg-accent text-accent-foreground'
-                      : 'hover:bg-accent hover:text-accent-foreground'
-                      }`}
+                    className="flex items-center p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-300"
+                    style={{ animationDelay: `${(navLinks.length + index) * 100}ms` }}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    {link.icon}
-                    {link.name}
-                  </Link>
-                );
-              })}
-
-              {/* Resources section in mobile */}
-              <div className="px-3 py-2">
-                <p className="text-sm font-medium text-muted-foreground mb-2">Resources</p>
-                <div className="grid gap-1 pl-2">
-                  {resourcesLinks.map((link) => (
-                    <Link
-                      key={link.name}
-                      href={link.href}
-                      className={`flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent hover:text-accent-foreground ${link.color}`}
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
+                    <div className={`p-2 rounded-lg bg-gradient-to-r ${link.gradient} text-white mr-3`}>
                       {link.icon}
-                      {link.name}
-                    </Link>
-                  ))}
-                </div>
+                    </div>
+                    <div>
+                      <div className="font-medium text-slate-900 dark:text-white">{link.name}</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">{link.description}</div>
+                    </div>
+                  </Link>
+                ))}
               </div>
+            </div>
 
-              {user?.role === 'admin' && (
-                <Link
-                  href="/admin"
-                  className="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent hover:text-accent-foreground"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <ShieldCheck size={16} className="mr-2" />
-                  Admin Panel
-                </Link>
-              )}
-            </nav>
-
-            {!user && (
-              <div className="grid grid-cols-2 gap-2">
-                <Button asChild variant="outline" size="sm">
-                  <Link href="/login">Log in</Link>
-                </Button>
-                <Button asChild size="sm" className="bg-orange-500 hover:bg-orange-600">
-                  <Link href="/register">Sign up</Link>
-                </Button>
-              </div>
+            {user?.role === 'admin' && (
+              <Link
+                href="/admin"
+                className="flex items-center px-4 py-3 text-sm rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg transition-all duration-300 hover:scale-105"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <ShieldCheck size={16} className="mr-2" />
+                Admin Panel
+              </Link>
             )}
+          </nav>
 
-            {user && (
-              <div className="border-t pt-4">
-                <div className="flex items-center justify-between py-2">
-                  <div className="flex items-center">
-                    <Avatar className="h-8 w-8 mr-2">
+          {!user && (
+            <div className="grid grid-cols-2 gap-3 px-4">
+              <Button asChild variant="outline" size="sm" className="transition-all duration-300 hover:scale-105">
+                <Link href="/login">Log in</Link>
+              </Button>
+              <Button asChild size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 hover:scale-105">
+                <Link href="/register">Sign up</Link>
+              </Button>
+            </div>
+          )}
+
+          {user && (
+            <div className="border-t border-slate-200 dark:border-slate-700 pt-6 px-4">
+              <div className="flex items-center justify-between py-3 mb-4">
+                <div className="flex items-center">
+                  <div className="relative">
+                    <Avatar className="h-12 w-12 mr-3 ring-2 ring-orange-500 ring-offset-2 dark:ring-offset-slate-900">
                       <AvatarImage src={user.avatarUrl} alt={user.name} />
-                      <AvatarFallback className="text-xs">
+                      <AvatarFallback className="bg-gradient-to-r from-orange-500 to-orange-500 text-white font-semibold">
                         {user.name.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <div>
-                      <p className="text-sm font-medium">{user.name}</p>
-                      <p className="text-xs text-muted-foreground">{user.email}</p>
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse"></div>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-900 dark:text-white">{user.name}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
+                    <div className="flex items-center mt-1">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                      <span className="text-xs text-green-600 dark:text-green-400">Online</span>
                     </div>
                   </div>
                 </div>
-                <div className="grid gap-1 mt-2">
-                  <Link
-                    href="/profile"
-                    className="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent hover:text-accent-foreground"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <User size={16} className="mr-2" />
-                    Profile
-                  </Link>
-                  <Link
-                    href="/submissions"
-                    className="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent hover:text-accent-foreground"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <ClipboardList size={16} className="mr-2" />
-                    My Submissions
-                  </Link>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="flex items-center justify-start px-3 text-left text-destructive hover:bg-destructive/10 hover:text-destructive"
-                    onClick={() => {
-                      handleLogout();
-                      setMobileMenuOpen(false);
-                    }}
-                  >
-                    <LogOut size={16} className="mr-2" />
-                    Logout
-                  </Button>
-                </div>
               </div>
-            )}
-          </div>
+              <div className="space-y-2">
+                <Link
+                  href="/profile"
+                  className="flex items-center p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-300"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <div className="p-2 rounded-lg bg-gradient-to-r from-orange-500 to-orange-500 text-white mr-3">
+                    <User size={14} />
+                  </div>
+                  <div>
+                    <div className="font-medium text-slate-900 dark:text-white">Profile</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">Manage your account</div>
+                  </div>
+                </Link>
+                <Link
+                  href="/submissions"
+                  className="flex items-center p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-300"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <div className="p-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white mr-3">
+                    <ClipboardList size={14} />
+                  </div>
+                  <div>
+                    <div className="font-medium text-slate-900 dark:text-white">My Submissions</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">View your progress</div>
+                  </div>
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full flex items-center justify-start p-3 text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300"
+                  onClick={() => {
+                    handleLogout();
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-pink-500 text-white mr-3">
+                    <LogOut size={14} />
+                  </div>
+                  <div>
+                    <div className="font-medium">Logout</div>
+                    <div className="text-xs opacity-75">Sign out of your account</div>
+                  </div>
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Main Content */}
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 relative z-10">{children}</main>
 
-      {/* Footer */}
-      <footer className="border-t py-6 md:py-8 bg-zinc-950 text-zinc-400">
-        <div className="container flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex flex-col items-center md:items-start">
-            <div className="font-bold text-white">AlgoVista</div>
-            <p className="text-xs">Mastering algorithms, one problem at a time</p>
+      {/* Enhanced Footer */}
+      <footer className="relative border-t border-slate-200/50 dark:border-slate-700/50 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-slate-300 overflow-hidden">
+        {/* Footer background animation */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 animate-pulse"></div>
+
+        <div className="container relative py-12 md:py-16">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            {/* Brand section */}
+            <div className="md:col-span-2">
+              <div className="flex items-center mb-4">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-orange-600 rounded-lg blur opacity-75"></div>
+                  <div className="relative bg-gradient-to-r from-orange-600 to-orange-600 text-white px-3 py-2 rounded-lg">
+                    <Sparkles size={20} className="inline mr-2" />
+                    <span className="font-bold text-xl">AlgoVista</span>
+                  </div>
+                </div>
+              </div>
+              <p className="text-slate-400 mb-4 max-w-md">
+                Mastering algorithms, one problem at a time. Join thousands of developers improving their coding skills with our curated problem sets and comprehensive learning resources.
+              </p>
+              <div className="flex space-x-4">
+                <div className="flex items-center text-sm text-slate-400">
+                  <Heart size={16} className="mr-2 text-red-500 animate-pulse" />
+                  Made with love for developers
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h3 className="font-semibold text-white mb-4 flex items-center">
+                <Code size={16} className="mr-2 text-orange-400" />
+                Quick Links
+              </h3>
+              <ul className="space-y-2">
+                {['About', 'Contact', 'Privacy', 'Terms'].map((item) => (
+                  <li key={item}>
+                    <Link
+                      href={`/${item.toLowerCase()}`}
+                      className="text-slate-400 hover:text-white transition-all duration-300 hover:translate-x-1 flex items-center group"
+                    >
+                      <span className="w-1 h-1 bg-orange-400 rounded-full mr-2 opacity-50 group-hover:opacity-100 transition-opacity duration-300"></span>
+                      {item}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Resources */}
+            <div>
+              <h3 className="font-semibold text-white mb-4 flex items-center">
+                <BookOpen size={16} className="mr-2 text-emerald-400" />
+                Resources
+              </h3>
+              <ul className="space-y-2">
+                {resourcesLinks.map((item) => (
+                  <li key={item.name}>
+                    <Link
+                      href={item.href}
+                      className="text-slate-400 hover:text-white transition-all duration-300 hover:translate-x-1 flex items-center group"
+                    >
+                      <span className="w-1 h-1 bg-emerald-400 rounded-full mr-2 opacity-50 group-hover:opacity-100 transition-opacity duration-300"></span>
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-          <div className="flex space-x-4 text-xs">
-            <Link href="/about" className="hover:text-white">About</Link>
-            <Link href="/contact" className="hover:text-white">Contact</Link>
-            <Link href="/privacy" className="hover:text-white">Privacy</Link>
-            <Link href="/terms" className="hover:text-white">Terms</Link>
+
+          {/* Footer bottom */}
+          <div className="border-t border-slate-700/50 pt-8">
+            <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+              <div className="flex items-center space-x-6 text-sm text-slate-400">
+                <div className="flex items-center">
+                  <Shield size={16} className="mr-2 text-green-400" />
+                  Secure & Trusted
+                </div>
+                <div className="flex items-center">
+                  <Zap size={16} className="mr-2 text-yellow-400" />
+                  Lightning Fast
+                </div>
+                <div className="flex items-center">
+                  <Heart size={16} className="mr-2 text-red-400" />
+                  Community Driven
+                </div>
+              </div>
+
+              <div className="text-sm text-slate-400 flex items-center">
+                <Mail size={16} className="mr-2" />
+                © {new Date().getFullYear()} AlgoVista. All rights reserved.
+              </div>
+            </div>
           </div>
-          <div className="text-xs text-center md:text-right">
-            © {new Date().getFullYear()} AlgoVista. All rights reserved.
+
+          {/* Floating particles effect */}
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+            {[...Array(20)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute w-1 h-1 bg-blue-400/30 rounded-full animate-float"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  animationDelay: `${Math.random() * 3}s`,
+                  animationDuration: `${3 + Math.random() * 2}s`
+                }}
+              ></div>
+            ))}
           </div>
         </div>
       </footer>
+
+      {/* Custom CSS for animations */}
+      <style jsx>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+          50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+        }
+        
+        .animate-float {
+          animation: float 4s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+        
+        .animate-shimmer {
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+          background-size: 200% 100%;
+          animation: shimmer 2s infinite;
+        }
+      `}</style>
     </div>
   );
 }
