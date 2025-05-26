@@ -1518,7 +1518,7 @@ export default function ProblemsPage() {
                                             <div className="grid grid-cols-2 md:grid-cols-12 items-center gap-4 p-4">
                                                 {/* Mobile View */}
                                                 <div className="col-span-2 md:hidden">
-                                                    <h3 className="font-semibold text-white hover:text-orange-400 truncate">{p.title}</h3>
+                                                    {/* <h3 className="font-semibold text-white hover:text-orange-400 truncate">{p.title}</h3> */}
                                                     <div className="flex items-center justify-between mt-2">
                                                         <span className={`text-xs rounded px-2 py-1 ${diff.badge}`}>
                                                             {p.difficulty}
@@ -1570,3 +1570,4 @@ export default function ProblemsPage() {
         </div>
     );
 }
+

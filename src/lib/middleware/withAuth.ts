@@ -1,10 +1,10 @@
-import jwt from 'jsonwebtoken';
-import { NextApiRequest, NextApiResponse } from 'next';
-import { NextHandler } from 'next-connect';
-import User from '../models/User';
-import dbConnect from '../db';
+import jwt from "jsonwebtoken";
+import { NextApiRequest, NextApiResponse } from "next";
+import { NextHandler } from "next-connect";
+import User from "../models/User";
+import dbConnect from "../db";
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-fallback-secret-key-for-development';
+const JWT_SECRET = process.env.JWT_SECRET || "varunsingh";
 
 // Extended request interface to include user
 export interface AuthRequest extends NextApiRequest {
@@ -28,7 +28,7 @@ export async function withAuth(
 
     // If token was successfully verified, connect to DB and find user
     await dbConnect();
-    const user = await User.findById(decoded._id).select('-passwordHash');
+    const user = await User.findById(decoded._id).select("-passwordHash");
 
     if (user) {
       req.user = user;
@@ -48,7 +48,7 @@ export function requireAuth(
   next: NextHandler
 ) {
   if (!req.user) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: "Authentication required" });
   }
   return next();
 }
@@ -60,11 +60,11 @@ export function requireAdmin(
   next: NextHandler
 ) {
   if (!req.user) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: "Authentication required" });
   }
 
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Admin access required' });
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ error: "Admin access required" });
   }
 
   return next();
