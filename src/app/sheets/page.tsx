@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, BookOpen, AlertCircle } from 'lucide-react';
+import { Search } from 'lucide-react';
 import SheetList from '@/components/sheets/SheetList';
 
 export default function SheetsPage() {

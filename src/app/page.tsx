@@ -8,8 +8,7 @@ import apiClient from '@/lib/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, ChevronRight, Code, BookOpen, GraduationCap, LayoutDashboard, BarChart2, FilePen, User, CheckCircle } from 'lucide-react';
-import { Loader } from '@/components/ui/loader';
+import { ChevronRight, Code, BookOpen, GraduationCap, LayoutDashboard, BarChart2, FilePen, User, CheckCircle } from 'lucide-react';
 
 interface Sheet {
   _id: string;
