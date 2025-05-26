@@ -14,7 +14,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Code, Filter, Search, CheckCircle, AlertCircle, Clock, Tag, Trophy, Target, BookOpen } from 'lucide-react';
+import { Code, Filter, Search, CheckCircle, AlertCircle, Clock, Tag, Trophy, Target, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface CodingProblem {
     _id: string;
@@ -40,6 +40,8 @@ interface Submission {
     code: string;
 }
 
+const PROBLEMS_PER_PAGE = 10;
+
 export default function ProblemsPage() {
     const { user } = useAuth();
     const [problems, setProblems] = useState<CodingProblem[]>([]);
@@ -48,6 +50,7 @@ export default function ProblemsPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
     const [selectedTag, setSelectedTag] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -56,7 +59,10 @@ export default function ProblemsPage() {
         async function fetchProblems() {
             try {
                 const { data } = await apiClient.getAllProblems();
-                setProblems(data.data || []);
+                // Handle both possible response structures
+                const problemsArray = data.data || data || [];
+                setProblems(problemsArray);
+                console.log('Fetched problems count:', problemsArray.length);
             } catch (err: any) {
                 setError(err.response?.data?.error || 'Failed to fetch coding problems');
             } finally {
@@ -130,10 +136,22 @@ export default function ProblemsPage() {
         return matchesSearch && matchesDiff && matchesTag;
     });
 
+    // Pagination calculations
+    const totalProblems = filteredProblems.length;
+    const totalPages = Math.ceil(totalProblems / PROBLEMS_PER_PAGE);
+    const startIndex = (currentPage - 1) * PROBLEMS_PER_PAGE;
+    const endIndex = startIndex + PROBLEMS_PER_PAGE;
+    const currentProblems = filteredProblems.slice(startIndex, endIndex);
+
+    // Reset to first page when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, selectedDifficulty, selectedTag]);
+
     const getUserStats = () => {
         if (!user || problems.length === 0) return null;
 
-        const total = problems.length;
+        const total = problems.length; // This should be the total count of ALL problems, not filtered
 
         console.log('All problems:', problems.map(p => ({ id: p._id, title: p.title })));
         console.log('All submissions keys:', Object.keys(submissions));
@@ -222,6 +240,110 @@ export default function ProblemsPage() {
         },
     };
 
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const renderPaginationButtons = () => {
+        const buttons = [];
+        const maxVisiblePages = 5;
+
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+
+        // Previous button
+        buttons.push(
+            <Button
+                key="prev"
+                variant="outline"
+                size="sm"
+                disabled={currentPage === 1}
+                onClick={() => handlePageChange(currentPage - 1)}
+                className="bg-zinc-800/50 border-zinc-700 text-zinc-300 hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                <ChevronLeft className="w-4 h-4" />
+            </Button>
+        );
+
+        // First page
+        if (startPage > 1) {
+            buttons.push(
+                <Button
+                    key={1}
+                    variant={currentPage === 1 ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handlePageChange(1)}
+                    className={currentPage === 1
+                        ? "bg-orange-500 hover:bg-orange-600 text-white"
+                        : "bg-zinc-800/50 border-zinc-700 text-zinc-300 hover:bg-zinc-700"}
+                >
+                    1
+                </Button>
+            );
+            if (startPage > 2) {
+                buttons.push(<span key="dots1" className="text-zinc-400 px-2">...</span>);
+            }
+        }
+
+        // Page buttons
+        for (let i = startPage; i <= endPage; i++) {
+            buttons.push(
+                <Button
+                    key={i}
+                    variant={currentPage === i ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handlePageChange(i)}
+                    className={currentPage === i
+                        ? "bg-orange-500 hover:bg-orange-600 text-white"
+                        : "bg-zinc-800/50 border-zinc-700 text-zinc-300 hover:bg-zinc-700"}
+                >
+                    {i}
+                </Button>
+            );
+        }
+
+        // Last page
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                buttons.push(<span key="dots2" className="text-zinc-400 px-2">...</span>);
+            }
+            buttons.push(
+                <Button
+                    key={totalPages}
+                    variant={currentPage === totalPages ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handlePageChange(totalPages)}
+                    className={currentPage === totalPages
+                        ? "bg-orange-500 hover:bg-orange-600 text-white"
+                        : "bg-zinc-800/50 border-zinc-700 text-zinc-300 hover:bg-zinc-700"}
+                >
+                    {totalPages}
+                </Button>
+            );
+        }
+
+        // Next button
+        buttons.push(
+            <Button
+                key="next"
+                variant="outline"
+                size="sm"
+                disabled={currentPage === totalPages}
+                onClick={() => handlePageChange(currentPage + 1)}
+                className="bg-zinc-800/50 border-zinc-700 text-zinc-300 hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                <ChevronRight className="w-4 h-4" />
+            </Button>
+        );
+
+        return buttons;
+    };
+
     if (loading) return (
         <div className="min-h-screen flex items-center justify-center bg-zinc-950">
             <div className="animate-spin">
@@ -246,7 +368,7 @@ export default function ProblemsPage() {
         <div className="bg-zinc-950 w-full ">
             <div className="container mx-auto p-4 md:p-6 bg-zinc-950 min-h-screen">
                 <header className="text-center mb-8">
-                    <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Coding Challenges</h1>
+                    <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Top Interview 155</h1>
                     <p className="text-zinc-400 max-w-2xl mx-auto">
                         Master algorithms & data structures with curated problems.
                     </p>
@@ -342,6 +464,18 @@ export default function ProblemsPage() {
                     </CardContent>
                 </Card>
 
+                {/* Results summary */}
+                {totalProblems > 0 && (
+                    <div className="mb-4 flex justify-between items-center text-zinc-400 text-sm">
+                        <span>
+                            Showing {startIndex + 1}-{Math.min(endIndex, totalProblems)} of {totalProblems} problems
+                        </span>
+                        <span>
+                            Page {currentPage} of {totalPages}
+                        </span>
+                    </div>
+                )}
+
                 {filteredProblems.length === 0 ? (
                     <Card className="bg-zinc-900/70 border-zinc-800">
                         <CardContent className="text-center py-12 px-4">
@@ -351,85 +485,94 @@ export default function ProblemsPage() {
                         </CardContent>
                     </Card>
                 ) : (
-                    <Card className="bg-zinc-900/70 border-zinc-800">
-                        <CardContent className="p-0">
-                            {/* Mobile Header */}
-                            <div className="grid grid-cols-2 gap-4 p-4 font-semibold text-zinc-300 border-b border-zinc-800 md:hidden">
-                                <div className="col-span-1">Problem</div>
-                                <div className="col-span-1">Status</div>
-                            </div>
+                    <>
+                        <Card className="bg-zinc-900/70 border-zinc-800">
+                            <CardContent className="p-0">
+                                {/* Mobile Header */}
+                                <div className="grid grid-cols-2 gap-4 p-4 font-semibold text-zinc-300 border-b border-zinc-800 md:hidden">
+                                    <div className="col-span-1">Problem</div>
+                                    <div className="col-span-1">Status</div>
+                                </div>
 
-                            {/* Desktop Header */}
-                            <div className="hidden md:grid grid-cols-12 gap-4 p-4 font-semibold text-zinc-300 border-b border-zinc-800">
-                                <div className="col-span-1">#</div>
-                                <div className="col-span-4">Problem</div>
-                                <div className="col-span-2">Difficulty</div>
-                                <div className="col-span-3">Tags</div>
-                                <div className="col-span-2">Status</div>
-                            </div>
+                                {/* Desktop Header */}
+                                <div className="hidden md:grid grid-cols-12 gap-4 p-4 font-semibold text-zinc-300 border-b border-zinc-800">
+                                    <div className="col-span-1">#</div>
+                                    <div className="col-span-4">Problem</div>
+                                    <div className="col-span-2">Difficulty</div>
+                                    <div className="col-span-3">Tags</div>
+                                    <div className="col-span-2">Status</div>
+                                </div>
 
-                            <div className="divide-y divide-zinc-800">
-                                {filteredProblems.map((p, i) => {
-                                    const statusKey = getProblemStatus(p._id);
-                                    const stat = statusStyles[statusKey];
-                                    const diff = diffStyles[p.difficulty];
-                                    const Icon = stat.icon;
+                                <div className="divide-y divide-zinc-800">
+                                    {currentProblems.map((p, i) => {
+                                        const statusKey = getProblemStatus(p._id);
+                                        const stat = statusStyles[statusKey];
+                                        const diff = diffStyles[p.difficulty];
+                                        const Icon = stat.icon;
+                                        const globalIndex = startIndex + i + 1;
 
-                                    return (
-                                        <Link href={`/problems/${p._id}`} key={p._id} className="block hover:bg-zinc-900/50 transition-colors">
-                                            <div className="grid grid-cols-2 md:grid-cols-12 items-center gap-4 p-4">
-                                                {/* Mobile View */}
-                                                <div className="col-span-2 md:hidden">
-                                                    {/* <h3 className="font-semibold text-white hover:text-orange-400 truncate">{p.title}</h3> */}
-                                                    <div className="flex items-center justify-between mt-2">
-                                                        <span className={`text-xs rounded px-2 py-1 ${diff.badge}`}>
+                                        return (
+                                            <Link href={`/problems/${p._id}`} key={p._id} className="block hover:bg-zinc-900/50 transition-colors">
+                                                <div className="grid grid-cols-2 md:grid-cols-12 items-center gap-4 p-4">
+                                                    {/* Mobile View */}
+                                                    <div className="col-span-2 md:hidden">
+                                                        <h3 className="font-semibold text-white hover:text-orange-400 truncate">{p.title}</h3>
+                                                        <div className="flex items-center justify-between mt-2">
+                                                            <span className={`text-xs rounded px-2 py-1 ${diff.badge}`}>
+                                                                {p.difficulty}
+                                                            </span>
+                                                            <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded ${stat.bg} ${stat.color}`}>
+                                                                <Icon className="w-3 h-3" /> {stat.label}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Desktop View */}
+                                                    <div className="col-span-1 hidden md:flex justify-center text-zinc-400">{globalIndex}</div>
+                                                    <div className="col-span-4">
+                                                        <h3 className="font-semibold text-white hover:text-orange-400 truncate">{p.title}</h3>
+                                                        <p className="text-sm text-zinc-400 mt-1 line-clamp-2">
+                                                            {p.description.length > 100 ? `${p.description.slice(0, 100)}...` : p.description}
+                                                        </p>
+                                                    </div>
+                                                    <div className="col-span-2 hidden md:flex justify-center">
+                                                        <span className={`px-2 py-1 text-xs rounded ${diff.badge}`}>
                                                             {p.difficulty}
                                                         </span>
+                                                    </div>
+                                                    <div className="col-span-3 hidden md:flex flex-wrap gap-1">
+                                                        {p.tags.map(t => (
+                                                            <Badge
+                                                                key={t}
+                                                                variant="outline"
+                                                                className="px-2 py-0.5 text-xs bg-zinc-800/50 text-zinc-300 border-zinc-700 hover:bg-zinc-800"
+                                                            >
+                                                                {t}
+                                                            </Badge>
+                                                        ))}
+                                                    </div>
+                                                    <div className="col-span-2 hidden md:flex justify-center">
                                                         <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded ${stat.bg} ${stat.color}`}>
                                                             <Icon className="w-3 h-3" /> {stat.label}
                                                         </span>
                                                     </div>
                                                 </div>
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
+                            </CardContent>
+                        </Card>
 
-                                                {/* Desktop View */}
-                                                <div className="col-span-1 hidden md:flex justify-center text-zinc-400">{i + 1}</div>
-                                                <div className="col-span-4">
-                                                    <h3 className="font-semibold text-white hover:text-orange-400 truncate">{p.title}</h3>
-                                                    <p className="text-sm text-zinc-400 mt-1 line-clamp-2">
-                                                        {p.description.length > 100 ? `${p.description.slice(0, 100)}...` : p.description}
-                                                    </p>
-                                                </div>
-                                                <div className="col-span-2 hidden md:flex justify-center">
-                                                    <span className={`px-2 py-1 text-xs rounded ${diff.badge}`}>
-                                                        {p.difficulty}
-                                                    </span>
-                                                </div>
-                                                <div className="col-span-3 hidden md:flex flex-wrap gap-1">
-                                                    {p.tags.map(t => (
-                                                        <Badge
-                                                            key={t}
-                                                            variant="outline"
-                                                            className="px-2 py-0.5 text-xs bg-zinc-800/50 text-zinc-300 border-zinc-700 hover:bg-zinc-800"
-                                                        >
-                                                            {t}
-                                                        </Badge>
-                                                    ))}
-                                                </div>
-                                                <div className="col-span-2 hidden md:flex justify-center">
-                                                    <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded ${stat.bg} ${stat.color}`}>
-                                                        <Icon className="w-3 h-3" /> {stat.label}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </Link>
-                                    );
-                                })}
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className="mt-8 flex justify-center items-center gap-2">
+                                {renderPaginationButtons()}
                             </div>
-                        </CardContent>
-                    </Card>
+                        )}
+                    </>
                 )}
             </div>
         </div>
     );
 }
-

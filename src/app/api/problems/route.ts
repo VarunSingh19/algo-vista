@@ -25,40 +25,34 @@ const createProblemSchema = z.object({
   spaceComplexity: z.string().optional(),
 });
 
-// GET all coding problems (public)
+// GET all coding problems (public) - Fetch ALL problems without pagination
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
 
-    // Extract query parameters
+    // Extract query parameters for filtering only (no pagination)
     const url = new URL(request.url);
     const tag = url.searchParams.get("tag");
     const difficulty = url.searchParams.get("difficulty");
-    const page = parseInt(url.searchParams.get("page") || "1");
-    const limit = parseInt(url.searchParams.get("limit") || "10");
-    const skip = (page - 1) * limit;
 
     // Create filter for query
-    const filter: any = {};
+    interface ProblemFilter {
+      tags?: string;
+      difficulty?: string;
+    }
+    const filter: ProblemFilter = {};
     if (tag) filter.tags = tag;
     if (difficulty) filter.difficulty = difficulty;
 
-    // Query database
-    const problems = await CodingProblem.find(filter)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+    // Query database - fetch ALL problems without limit
+    const problems = await CodingProblem.find(filter).sort({ createdAt: -1 });
 
-    const total = await CodingProblem.countDocuments(filter);
+    const total = problems.length;
 
     return NextResponse.json({
       data: problems,
-      pagination: {
-        total,
-        page,
-        limit,
-        pages: Math.ceil(total / limit),
-      },
+      total,
+      success: true,
     });
   } catch (error) {
     console.error("Get problems error:", error);
