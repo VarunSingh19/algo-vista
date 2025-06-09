@@ -971,6 +971,16 @@ export default function RegisterForm() {
                   <Alert>
                     <AlertDescription className="text-green-600">{success}</AlertDescription>
                   </Alert>
+
+                )}
+                {success && (
+                  //  Check spam for OTP
+                  <Alert>
+                    <AlertDescription className="text-red-600">
+                      If you don't see the OTP, please check your spam folder.
+                    </AlertDescription>
+                  </Alert>
+
                 )}
 
                 <Button type="submit" className="w-full" disabled={isLoading}>
