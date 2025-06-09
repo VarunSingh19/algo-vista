@@ -302,7 +302,7 @@ export default function CareerPage() {
                         </a>
 
                         <p className="text-gray-400 text-sm mt-4">
-                            Questions? Email us at careers@vibearmor.com
+                            Questions? Email us at vibearmorofficial@gmail.com
                         </p>
                     </div>
                 </div>
