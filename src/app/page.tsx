@@ -44,7 +44,7 @@ export default function HomePage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [problems, setProblems] = useState<CodingProblem[]>([]);
   const [progress, setProgress] = useState<Record<string, SheetProgress>>({});
-  const [userCount, setUserCount] = useState<number>(456);
+  const [userCount, setUserCount] = useState<number>(4560);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

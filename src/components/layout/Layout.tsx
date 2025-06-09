@@ -23,6 +23,7 @@ import {
   Heart,
   Mail,
   Shield,
+  Briefcase,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -73,9 +74,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       gradient: "from-emerald-500 to-teal-600",
     },
     {
-      name: "Submissions",
-      href: "/submissions",
-      icon: <ClipboardList size={16} className="mr-2" />,
+      name: "Careers",
+      href: "/careers",
+      icon: <Briefcase size={16} className="mr-2" />,
       requiresAuth: true,
       gradient: "from-orange-500 to-red-600",
     },
@@ -477,7 +478,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <User size={14} />
                   </div>
                   <div>
-                    <div className="font-medium text-white">Profile</div>
+                    <div className="font-medium "><span className="text-white">Profile</span></div>
                     <div className="text-xs text-slate-400">Manage your account</div>
                   </div>
                 </Link>
