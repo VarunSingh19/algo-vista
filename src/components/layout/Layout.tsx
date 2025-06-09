@@ -432,19 +432,25 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           {!user && (
             <div className="grid grid-cols-2 gap-3 px-4">
-              <Button asChild variant="outline" size="sm" className="transition-all duration-300 hover:scale-105">
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="transition-all duration-300 hover:scale-105"
+                onClick={() => setMobileMenuOpen(false)} // Add this line
+              >
                 <Link href="/login">Log in</Link>
               </Button>
               <Button
                 asChild
                 size="sm"
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 hover:scale-105"
+                onClick={() => setMobileMenuOpen(false)} // Add this line
               >
                 <Link href="/register">Sign up</Link>
               </Button>
             </div>
           )}
-
           {user && (
             <div className="border-t border-slate-700 pt-6 px-4">
               <div className="flex items-center justify-between py-3 mb-4">
