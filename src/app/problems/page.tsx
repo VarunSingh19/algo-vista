@@ -528,14 +528,16 @@ export default function ProblemsPage() {
                                                     </div>
 
                                                     {/* Desktop View */}
-                                                    <div className="col-span-1 hidden md:flex justify-center text-zinc-400">{globalIndex}</div>
-                                                    <div className="col-span-4">
-                                                        <h3 className="font-semibold text-white hover:text-orange-400 truncate">{p.title}</h3>
+                                                    <div className="hidden md:flex md:col-span-1 justify-center text-zinc-400">
+                                                        {globalIndex}
+                                                    </div>
+                                                    <div className="hidden md:block md:col-span-4">
+                                                        <h3 className="font-semibold text-white sm:block hover:text-orange-400 truncate">{p.title}</h3>
                                                         <p className="text-sm text-zinc-400 mt-1 line-clamp-2">
                                                             {p.description.length > 100 ? `${p.description.slice(0, 100)}...` : p.description}
                                                         </p>
                                                     </div>
-                                                    <div className="col-span-2 hidden md:flex justify-center">
+                                                    <div className="hidden md:flex md:col-span-2 justify-center">
                                                         <span className={`px-2 py-1 text-xs rounded ${diff.badge}`}>
                                                             {p.difficulty}
                                                         </span>
@@ -551,7 +553,7 @@ export default function ProblemsPage() {
                                                             </Badge>
                                                         ))}
                                                     </div>
-                                                    <div className="col-span-2 hidden md:flex justify-center">
+                                                    <div className="hidden md:flex md:col-span-2 justify-center">
                                                         <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded ${stat.bg} ${stat.color}`}>
                                                             <Icon className="w-3 h-3" /> {stat.label}
                                                         </span>
