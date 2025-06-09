@@ -129,7 +129,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div className="relative bg-gradient-to-r from-orange-600 to-orange-600 text-white px-3 py-2 rounded-lg">
                 <Sparkles size={20} className="inline mr-2 animate-pulse" />
                 <span className="font-bold text-xl bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-                  AlgoVista
+                  VibeArmor
                 </span>
               </div>
             </div>
@@ -320,9 +320,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div className="hidden md:flex space-x-3">
                 <Button
                   asChild
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
-                  className="transition-all duration-300 hover:scale-105 hover:bg-slate-800"
+                  className="transition-all duration-300 hover:scale-105 hover:bg-slate-100"
                 >
                   <Link href="/login">Log in</Link>
                 </Button>
@@ -534,7 +534,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-orange-600 rounded-lg blur opacity-75"></div>
                   <div className="relative bg-gradient-to-r from-orange-600 to-orange-600 text-white px-3 py-2 rounded-lg">
                     <Sparkles size={20} className="inline mr-2" />
-                    <span className="font-bold text-xl">AlgoVista</span>
+                    <span className="font-bold text-xl">VibeArmor</span>
                   </div>
                 </div>
               </div>
@@ -612,7 +612,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </div>
 
               <div className="text-sm text-slate-400 flex items-center">
-                <Mail size={16} className="mr-2" />© {new Date().getFullYear()} AlgoVista. All rights reserved.
+                <Mail size={16} className="mr-2" />© {new Date().getFullYear()} VibeArmor. All rights reserved.
               </div>
             </div>
           </div>

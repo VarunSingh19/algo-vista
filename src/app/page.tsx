@@ -177,7 +177,7 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto relative z-10">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Advance Your Career with <span className="text-orange-500">AlgoVista</span>
+              Advance Your Career with <span className="text-orange-500">VibeArmor</span>
             </h1>
             <p className="text-xl text-zinc-400 max-w-2xl mx-auto mb-8">
               Master DSA with curated resources and expert guidance. Learn the skills that set you apart and join the top coders!

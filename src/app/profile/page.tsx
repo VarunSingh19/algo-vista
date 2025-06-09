@@ -661,7 +661,7 @@ export default function ProfilePage() {
                     </div>
 
                     <div className="text-center">
-                      <h2 className="text-xl font-bold">{user?.name || "User Name"}</h2>
+                      <h2 className="text-xl font-bold text-white">{user?.name || "User Name"}</h2>
                       <p className="text-sm text-gray-400">
                         {user?.bio}
                       </p>
@@ -673,7 +673,7 @@ export default function ProfilePage() {
               {/* Technical Skills */}
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-lg">Technical Skills</CardTitle>
+                  <CardTitle className="text-lg text-white">Technical Skills</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
@@ -693,7 +693,7 @@ export default function ProfilePage() {
               {/* Personal Information */}
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-lg">Personal Information</CardTitle>
+                  <CardTitle className="text-lg text-white">Personal Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex items-center gap-2 text-sm">
@@ -702,12 +702,12 @@ export default function ProfilePage() {
                       {user?.email ?? "user@example.com"}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
+                  {/* <div className="flex items-center gap-2 text-sm">
                     <MapPin size={16} className="text-gray-400" />
                     <span className="text-gray-300">
                       {user?.location ?? "Unknown location"}
                     </span>
-                  </div>
+                  </div> */}
                   <div className="flex items-center gap-2 text-sm">
                     <Calendar size={16} className="text-gray-400" />
                     <span className="text-gray-300">
@@ -739,7 +739,7 @@ export default function ProfilePage() {
                                     href={social.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="p-2 rounded-lg border border-gray-600 hover:bg-gray-700 transition-colors"
+                                    className="p-2 rounded-lg border border-gray-600 hover:bg-gray-100 transition-colors"
                                   >
                                     {social.icon}
                                   </a>
@@ -788,7 +788,7 @@ export default function ProfilePage() {
                   {/* Overall Progress */}
                   <Card className="bg-gray-800 border-gray-700">
                     <CardHeader>
-                      <CardTitle className="text-xl">Overall Progress</CardTitle>
+                      <CardTitle className="text-xl text-white">Overall Progress</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       {loading ? (
@@ -812,7 +812,7 @@ export default function ProfilePage() {
                               <div key={sheet._id} className="flex items-center justify-between">
                                 <div className="flex-1">
                                   <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm font-medium">{sheet.title}</span>
+                                    <span className="text-sm font-medium text-white">{sheet.title}</span>
                                     <span className="text-sm text-gray-400">{completionPercentage}%</span>
                                   </div>
                                   <div className="flex items-center justify-between mb-1">
@@ -820,7 +820,7 @@ export default function ProfilePage() {
                                       {completed}/{sheet.totalProblems}
                                     </span>
                                   </div>
-                                  <Progress value={completionPercentage} className="h-2 bg-gray-700" />
+                                  <Progress value={completionPercentage} className="h-2 bg-gray-500" />
                                 </div>
                               </div>
                             )
@@ -893,11 +893,11 @@ export default function ProfilePage() {
                                   />
                                 </svg>
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                  <span className="text-sm font-bold">{stats.completion}%</span>
+                                  <span className="text-sm font-bold text-white">{stats.completion}%</span>
                                 </div>
                               </div>
-                              <h3 className="font-semibold mb-1">Total Progress</h3>
-                              <p className="text-2xl font-bold">
+                              <h3 className="font-semibold mb-1 text-white">Total Progress</h3>
+                              <p className="text-2xl font-bold text-white">
                                 {stats.totalCompleted}/{stats.totalProblems}
                               </p>
                             </div>
@@ -948,9 +948,9 @@ export default function ProfilePage() {
                                 <div className="w-3 h-3 bg-red-400 rounded-full mx-auto mb-2"></div>
                                 <h3 className="font-semibold">Hard</h3>
                               </div>
-                              <p className="text-xl font-bold">
+                              <p className="text-xl font-bold text-white">
                                 {Math.floor(stats.totalCompleted * 0.1)}/{Math.floor(stats.totalProblems * 0.1)}
-                                <span className="text-sm text-gray-400 ml-1">completed</span>
+                                <span className="text-sm text-gray-100 ml-1">completed</span>
                               </p>
                               <div className="w-full bg-gray-700 rounded-full h-1 mt-2">
                                 <div
@@ -965,7 +965,7 @@ export default function ProfilePage() {
 
                           {/* Topics Covered */}
                           <div className="mt-8">
-                            <h3 className="text-lg font-semibold mb-4">Topics covered</h3>
+                            <h3 className="text-lg font-semibold mb-4 text-white">Topics covered</h3>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                               {[
                                 { name: "Maths", count: 1 },
@@ -1253,7 +1253,7 @@ export default function ProfilePage() {
                         value={leetcodeUsername}
                         onChange={(e) => setLeetcodeUsername(e.target.value)}
                         placeholder="Enter your username"
-                        className="bg-gray-800/50 border-gray-600/50 focus:border-orange-500/50 focus:ring-orange-500/20 backdrop-blur-sm"
+                        className="bg-gray-800/50 border-gray-600/50 focus:border-orange-500/50 focus:ring-orange-500/20 backdrop-blur-sm text-white"
                       />
                       <Button
                         size="sm"

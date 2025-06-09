@@ -10,7 +10,7 @@ const JWT_SECRET =
   process.env.JWT_SECRET || "your-fallback-secret-key-for-development";
 
 // Helper to check if user is admin
-async function isAdmin(request: NextRequest) {
+async function isAdmin() {
   try {
     await dbConnect();
 
@@ -80,7 +80,7 @@ async function calculateDifficulties(sheet: SheetData) {
 export async function GET(request: NextRequest) {
   try {
     // Check if user is admin
-    const adminUser = await isAdmin(request);
+    const adminUser = await isAdmin();
     if (!adminUser) {
       return NextResponse.json(
         { error: "Unauthorized. Admin access required." },
@@ -120,10 +120,17 @@ export async function GET(request: NextRequest) {
       .lean();
 
     // Map user data
-    const userMap = users.reduce((acc, user) => {
+    interface UserDoc {
+      _id: { toString(): string };
+      name: string;
+      email: string;
+      __v?: number;
+    }
+
+    const userMap = (users as UserDoc[]).reduce<Record<string, { name: string; email: string }>>((acc, user) => {
       acc[user._id.toString()] = { name: user.name, email: user.email };
       return acc;
-    }, {} as Record<string, { name: string; email: string }>);
+    }, {});
 
     // Calculate progress statistics for each user
     const progressReport = progressEntries.map((entry) => {
@@ -136,26 +143,37 @@ export async function GET(request: NextRequest) {
         Math.round((completedProblems / totalProblems) * 100) || 0;
 
       // Calculate difficulty breakdown
-      const byDifficulty = {
-        Easy: {
-          completed: entry.completedProblemIds.filter((id) =>
-            difficulties.Easy.problems.includes(id)
-          ).length,
-          total: difficulties.Easy.total,
-        },
-        Medium: {
-          completed: entry.completedProblemIds.filter((id) =>
-            difficulties.Medium.problems.includes(id)
-          ).length,
-          total: difficulties.Medium.total,
-        },
-        Hard: {
-          completed: entry.completedProblemIds.filter((id) =>
-            difficulties.Hard.problems.includes(id)
-          ).length,
-          total: difficulties.Hard.total,
-        },
-      };
+    interface DifficultyProgress {
+        completed: number;
+        total: number;
+    }
+
+    interface DifficultyBreakdown {
+        Easy: DifficultyProgress;
+        Medium: DifficultyProgress;
+        Hard: DifficultyProgress;
+    }
+
+                const byDifficulty: DifficultyBreakdown = {
+                    Easy: {
+                        completed: entry.completedProblemIds.filter((id: string) =>
+                            difficulties.Easy.problems.includes(id)
+                        ).length,
+                        total: difficulties.Easy.total,
+                    },
+                    Medium: {
+                        completed: entry.completedProblemIds.filter((id: string) =>
+                            difficulties.Medium.problems.includes(id)
+                        ).length,
+                        total: difficulties.Medium.total,
+                    },
+                    Hard: {
+                        completed: entry.completedProblemIds.filter((id: string) =>
+                            difficulties.Hard.problems.includes(id)
+                        ).length,
+                        total: difficulties.Hard.total,
+                    },
+                };
 
       return {
         userId,

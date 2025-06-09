@@ -8,6 +8,7 @@ import ProgressReport from '@/components/admin/ProgressReport';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import BlogList from '@/components/admin/BlogList';
 import ProblemList from '@/components/admin/ProblemList';
+import SubmissionsList from '@/components/admin/SubmissionList';
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState('users');
@@ -18,12 +19,13 @@ export default function AdminPage() {
         <h1 className="text-2xl font-bold">Admin Panel</h1>
 
         <Tabs defaultValue="users" onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="sheets">Sheets</TabsTrigger>
             <TabsTrigger value="reports">Progress Reports</TabsTrigger>
             <TabsTrigger value="blogs">Blogs</TabsTrigger>
             <TabsTrigger value="problems">Coding Problems</TabsTrigger>
+            <TabsTrigger value="submissions">Submissions</TabsTrigger>
           </TabsList>
 
           <TabsContent value="users" className="pt-4">
@@ -44,6 +46,10 @@ export default function AdminPage() {
 
           <TabsContent value="problems" className="pt-4">
             <ProblemList />
+          </TabsContent>
+
+          <TabsContent value="submissions" className="pt-4">
+            <SubmissionsList />
           </TabsContent>
         </Tabs>
       </div>

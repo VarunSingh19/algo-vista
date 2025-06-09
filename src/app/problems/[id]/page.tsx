@@ -232,43 +232,50 @@ export default function ProblemPage() {
         fetchProblem()
     }, [problemId])
 
-    // Fetch submissions - Fixed to only show submissions for current problem
+    // Modify the submissions filtering logic in useEffect
     useEffect(() => {
-        if (!problemId) return
+        if (!problemId) return;
+
         const fetchSubmissions = async () => {
             try {
-                const { data } = await apiClient.getSubmissions({
+                console.log("Fetching submissions for problemId:", problemId);
+
+                const response = await apiClient.getSubmissions({
                     problemId,
-                    allUsers: true,
-                })
-                const submissions = data.data || []
+                    allUsers: true
+                });
 
-                // Filter submissions to only include those for the current problem
-                const problemSubmissions = submissions.filter((sub: Submission) => sub.problemId === problemId)
+                console.log("API Response:", response);
 
-                setAllSubmissions(problemSubmissions)
+                if (response.data?.data) {
+                    const submissions = response.data.data;
 
-                if (user) {
-                    const userSubs = problemSubmissions.filter(
-                        (sub: Submission) => sub.userId.email === user.email || sub.userId._id === user._id,
-                    )
-                    setUserSubmissions(userSubs)
+                    // Filter all submissions to exclude others' pending submissions
+                    const filteredAllSubmissions = submissions.filter(
+                        (submission: Submission) =>
+                            submission.status !== "Pending" ||
+                            (user && (submission.userId._id === user._id || submission.userId.email === user.email))
+                    );
+
+                    setAllSubmissions(filteredAllSubmissions);
+
+                    // Keep all submissions (including pending) for the current user
+                    if (user) {
+                        const userSubs = submissions.filter(
+                            (sub: Submission) =>
+                                sub.userId._id === user._id ||
+                                sub.userId.email === user.email
+                        );
+                        setUserSubmissions(userSubs);
+                    }
                 }
             } catch (error) {
-                console.error("Error fetching submissions:", error)
-                try {
-                    const { data } = await apiClient.getSubmissions({ problemId })
-                    const submissions = data.data || []
-                    const problemSubmissions = submissions.filter((sub: Submission) => sub.problemId === problemId)
-                    setAllSubmissions(problemSubmissions)
-                    setUserSubmissions(problemSubmissions)
-                } catch (fallbackError) {
-                    console.error("Error fetching submissions (fallback):", fallbackError)
-                }
+                console.error("Error fetching submissions:", error);
             }
-        }
-        fetchSubmissions()
-    }, [user, problemId])
+        };
+
+        fetchSubmissions();
+    }, [problemId, user]);
 
     // Generate AI Solution
     const handleGenerateAISolution = async () => {
@@ -293,30 +300,48 @@ export default function ProblemPage() {
             router.push("/login")
             return
         }
+
         if (!code.trim() || code.trim() === getCodeTemplate(language).trim()) {
             setShowValidationWarning(true)
             setError("Please enter your code before submitting")
             setTimeout(() => setShowValidationWarning(false), 3000)
             return
         }
+
         try {
             setSubmitting(true)
             setError(null)
             setShowValidationWarning(false)
-            await apiClient.submitSolution(problemId, { code, language })
 
-            // Refresh submissions for this problem only
-            const submissionsResponse = await apiClient.getSubmissions({ problemId, allUsers: true })
-            const submissions = submissionsResponse.data.data || []
-            const problemSubmissions = submissions.filter((sub: Submission) => sub.problemId === problemId)
+            // Submit solution
+            const response = await apiClient.submitSolution(problemId, {
+                code,
+                language
+            });
 
-            setAllSubmissions(problemSubmissions)
-            if (user) {
-                const userSubs = problemSubmissions.filter(
-                    (sub: Submission) => sub.userId.email === user.email || sub.userId._id === user._id,
-                )
-                setUserSubmissions(userSubs)
+            // Refresh submissions
+            const submissionsResponse = await apiClient.getSubmissions({
+                problemId,
+                allUsers: true
+            });
+
+            if (submissionsResponse.data?.data) {
+                const submissions = submissionsResponse.data.data.filter(
+                    (sub: Submission) => sub.problemId === problemId
+                );
+
+                setAllSubmissions(submissions);
+
+                if (user) {
+                    const userSubs = submissions.filter(
+                        (sub: Submission) =>
+                            sub.userId._id === user._id ||
+                            sub.userId.email === user.email
+                    );
+                    setUserSubmissions(userSubs);
+                }
             }
+
             setActiveTab("submissions")
         } catch (err: any) {
             console.error("Submission error:", err)
@@ -402,7 +427,7 @@ export default function ProblemPage() {
         if (submissionFilter === "mine") {
             return userSubmissions
         }
-        return allSubmissions
+        return allSubmissions.filter(submission => submission.status !== "Pending");
     }
 
     // Check if submission belongs to current user
@@ -412,7 +437,7 @@ export default function ProblemPage() {
     }
 
     const displayedSubmissions = getDisplayedSubmissions()
-    const totalSubmissions = allSubmissions.length
+    const totalSubmissions = allSubmissions.filter(submission => submission.status !== "Pending").length
     const mySubmissions = userSubmissions.length
 
     // Loading state
@@ -961,7 +986,7 @@ export default function ProblemPage() {
                                     <TabsContent value="your-solution" className="space-y-6 mt-6">
                                         {/* Language selector */}
                                         <div>
-                                            <label className="text-sm font-semibold text-zinc-300 mb-3 block flex items-center gap-2">
+                                            <label className="text-sm font-semibold text-zinc-300 mb-3 block  items-center gap-2">
                                                 <Tag size={14} />
                                                 Programming Language
                                             </label>
@@ -983,7 +1008,7 @@ export default function ProblemPage() {
 
                                         {/* Code editor */}
                                         <div>
-                                            <label className="text-sm font-semibold text-zinc-300 mb-3 block flex items-center gap-2">
+                                            <label className="text-sm font-semibold text-zinc-300 mb-3 block  items-center gap-2">
                                                 <Code size={14} />
                                                 Your Code
                                             </label>
@@ -1076,7 +1101,7 @@ export default function ProblemPage() {
                                             <>
                                                 {/* AI Language Selector */}
                                                 <div>
-                                                    <label className="text-sm font-semibold text-zinc-300 mb-3 block flex items-center gap-2">
+                                                    <label className="text-sm font-semibold text-zinc-300 mb-3 block  items-center gap-2">
                                                         <Tag size={14} />
                                                         AI Solution Language
                                                     </label>

@@ -538,7 +538,7 @@ export function Loader() {
     )
 }
 
-export function LoaderWrapper({ children }: { children: React.ReactNode }) {
+export function LoaderWrapper({ isloading, error, children }: { isloading?: boolean; error?: any; children: React.ReactNode }) {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {

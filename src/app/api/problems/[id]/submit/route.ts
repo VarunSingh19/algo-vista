@@ -11,12 +11,12 @@ const submissionSchema = z.object({
   language: z.enum(["javascript", "python", "java", "cpp", "c"]),
 });
 
-// POST submit a solution (authenticated only)
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     const user = await isAuthenticated(request);
 
     if (!user) {
@@ -29,7 +29,7 @@ export async function POST(
     await dbConnect();
 
     // Check if problem exists
-    const problem = await CodingProblem.findById(params.id);
+    const problem = await CodingProblem.findById(resolvedParams.id);
 
     if (!problem) {
       return NextResponse.json(
@@ -52,10 +52,10 @@ export async function POST(
     const submission = await Submission.create({
       userId: user._id,
       userName: user.name,
-      problemId: params.id,
+      problemId: resolvedParams.id,
       code: validationResult.data.code,
       language: validationResult.data.language,
-      status: "Pending", // In a real app, you might process the submission asynchronously
+      status: "Pending",
     });
 
     return NextResponse.json(

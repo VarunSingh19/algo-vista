@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
 
     // Create filter for query
-    const filter: any = { published: true };
+    const filter: { published: boolean; tags?: string } = { published: true };
     if (tag) {
       filter.tags = tag;
     }

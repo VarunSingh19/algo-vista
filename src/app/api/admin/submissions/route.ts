@@ -3,18 +3,13 @@ import dbConnect from "@/lib/db";
 import Submission from "@/lib/models/Submission";
 import { isAuthenticated, isAdmin } from "@/lib/auth";
 
-// GET all submissions for a problem (admin only)
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest) {
   try {
-    const resolvedParams = await params;
     const user = await isAuthenticated(request);
 
-    if (!user) {
+    if (!user || !(await isAdmin(request))) {
       return NextResponse.json(
-        { error: "Authentication required" },
+        { error: "Admin access required" },
         { status: 401 }
       );
     }
@@ -23,22 +18,15 @@ export async function GET(
 
     const url = new URL(request.url);
     const status = url.searchParams.get("status");
-    const allUsers = url.searchParams.get("allUsers") === "true";
     const page = parseInt(url.searchParams.get("page") || "1");
     const limit = parseInt(url.searchParams.get("limit") || "10");
     const skip = (page - 1) * limit;
 
-    const filter: any = { problemId: resolvedParams.id };
-
-    if (!allUsers && !(await isAdmin(request))) {
-      filter.userId = user._id;
-    }
+    const filter: any = {};
 
     if (status) {
       filter.status = status;
     }
-
-    console.log("Filter being applied:", filter); // Debug log
 
     const submissions = await Submission.find(filter)
       .populate({
@@ -49,11 +37,9 @@ export async function GET(
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .lean(); // Convert to plain JavaScript objects
+      .lean();
 
     const total = await Submission.countDocuments(filter);
-
-    console.log("Submissions found:", submissions.length); // Debug log
 
     return NextResponse.json({
       success: true,
@@ -69,6 +55,46 @@ export async function GET(
     console.error("Get submissions error:", error);
     return NextResponse.json(
       { error: "Failed to fetch submissions" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const user = await isAuthenticated(request);
+    if (!user || !(await isAdmin(request))) {
+      return NextResponse.json(
+        { error: "Admin access required" },
+        { status: 401 }
+      );
+    }
+
+    await dbConnect();
+    const body = await request.json();
+    const { status } = body;
+
+    const submission = await Submission.findByIdAndUpdate(
+      params.id,
+      { status },
+      { new: true }
+    );
+
+    if (!submission) {
+      return NextResponse.json(
+        { error: "Submission not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ success: true, data: submission });
+  } catch (error) {
+    console.error("Update submission error:", error);
+    return NextResponse.json(
+      { error: "Failed to update submission" },
       { status: 500 }
     );
   }
