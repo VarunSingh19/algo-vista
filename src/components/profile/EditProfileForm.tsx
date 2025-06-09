@@ -1,4 +1,3 @@
-
 "use client"
 
 import type React from "react"
@@ -24,10 +23,12 @@ const profileSchema = z.object({
   bio: z.string().max(500, "Bio must be less than 500 characters").optional(),
   location: z.string().max(100, "Location must be less than 100 characters").optional(),
   avatarUrl: z.string().optional(),
-  github: z.string().url().optional().or(z.literal("")),
-  twitter: z.string().url().optional().or(z.literal("")),
-  linkedin: z.string().url().optional().or(z.literal("")),
-  personalSite: z.string().url().optional().or(z.literal("")),
+  socialLinks: z.object({
+    github: z.string().url().optional().or(z.literal("")),
+    twitter: z.string().url().optional().or(z.literal("")),
+    linkedin: z.string().url().optional().or(z.literal("")),
+    personalSite: z.string().url().optional().or(z.literal(""))
+  })
 })
 
 type ProfileFormValues = z.infer<typeof profileSchema>
@@ -38,7 +39,7 @@ export default function EditProfileForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
 
   // Initialize form with user data
   const form = useForm<ProfileFormValues>({
@@ -48,36 +49,85 @@ export default function EditProfileForm() {
       bio: user?.bio || "",
       location: user?.location || "",
       avatarUrl: user?.avatarUrl || "",
-      github: user?.socialLinks?.github || "",
-      twitter: user?.socialLinks?.twitter || "",
-      linkedin: user?.socialLinks?.linkedin || "",
-      personalSite: user?.socialLinks?.personalSite || "",
-    },
+      socialLinks: {
+        github: user?.socialLinks?.github || "",
+        twitter: user?.socialLinks?.twitter || "",
+        linkedin: user?.socialLinks?.linkedin || "",
+        personalSite: user?.socialLinks?.personalSite || ""
+      }
+    }
   })
 
-  // Handle avatar file selection
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+  // Watch the avatarUrl field to get the current value
+  const currentAvatarUrl = form.watch("avatarUrl")
 
-    if (file) {
+  // Handle avatar file selection
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      const file = e.target.files?.[0]
+      if (!file) return
+
       // Validate file type and size
       if (!file.type.startsWith("image/")) {
         setError("Please select an image file")
         return
       }
 
-      if (file.size > 5 * 1024 * 1024) {
-        // 5MB limit
-        setError("Image must be less than 5MB")
+      if (file.size > 2 * 1024 * 1024) { // Reduced to 2MB to avoid timeouts
+        setError("Image must be less than 2MB")
         return
       }
 
-      // Create a preview
+      setIsUploadingAvatar(true)
+      setError(null)
+
+      // Convert to base64 for your existing API
       const reader = new FileReader()
-      reader.onload = (event) => {
-        setAvatarPreview(event.target?.result as string)
+      reader.onload = async (event) => {
+        const base64Image = event.target?.result as string
+
+        try {
+          console.log("Uploading image to server...");
+
+          // Upload to your existing API that expects base64
+          const response = await fetch('/api/upload-avatar', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ image: base64Image })
+          })
+
+          if (!response.ok) {
+            const data = await response.json()
+            throw new Error(data.error || 'Failed to upload image')
+          }
+
+          const data = await response.json()
+
+          // IMPORTANT: Only store the Cloudinary URL, never the base64
+          console.log("API Response:", data) // Debug log
+          console.log("Cloudinary URL from API:", data.url) // Debug log
+
+          if (data.url && !data.url.startsWith('data:')) {
+            form.setValue("avatarUrl", data.url)
+            console.log("Form avatarUrl set to:", data.url)
+          } else {
+            throw new Error("Invalid URL received from server")
+          }
+
+        } catch (uploadError) {
+          console.error('Avatar upload error:', uploadError)
+          setError('Failed to upload image')
+        } finally {
+          setIsUploadingAvatar(false)
+        }
       }
       reader.readAsDataURL(file)
+    } catch (err) {
+      console.error('Avatar change error:', err)
+      setError('Failed to process image')
+      setIsUploadingAvatar(false)
     }
   }
 
@@ -88,35 +138,50 @@ export default function EditProfileForm() {
       setError(null)
       setSuccess(null)
 
-      // Upload avatar if new one was selected
-      let avatarUrl = values.avatarUrl
-
-      if (avatarPreview) {
-        // In a real app, you would upload to a service like Cloudinary
-        // For now, we'll just use the preview URL
-        avatarUrl = avatarPreview
-      }
-
-      // Update user profile
-      await updateUser({
+      const updateData = {
         name: values.name,
         bio: values.bio || "",
         location: values.location || "",
-        avatarUrl,
+        avatarUrl: values.avatarUrl || "", // This should now contain the Cloudinary URL
         socialLinks: {
-          github: values.github || "",
-          twitter: values.twitter || "",
-          linkedin: values.linkedin || "",
-          personalSite: values.personalSite || "",
+          github: values.socialLinks.github || "",
+          twitter: values.socialLinks.twitter || "",
+          linkedin: values.socialLinks.linkedin || "",
+          personalSite: values.socialLinks.personalSite || ""
+        }
+      }
+
+      console.log('Form values before submit:', form.getValues()) // Debug log
+      console.log('Submitting update with avatar URL:', values.avatarUrl) // Debug log
+
+      // Validate that we're not sending base64
+      if (values.avatarUrl && values.avatarUrl.startsWith('data:')) {
+        throw new Error("Cannot save base64 data. Please re-upload the image.")
+      }
+
+      const response = await fetch('/api/users/me', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
         },
+        body: JSON.stringify(updateData)
       })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to update profile')
+      }
+
+      const updatedUser = await response.json()
+      updateUser(updatedUser) // Update context after successful API call
 
       setSuccess("Profile updated successfully")
       setTimeout(() => {
-        window.location.reload()
+        router.refresh() // Use router.refresh() instead of window.location.reload()
       }, 1500)
     } catch (err: any) {
-      setError(err.response?.data?.error || "Failed to update profile")
+      console.error('Update error:', err)
+      setError(err.message || "Failed to update profile")
     } finally {
       setIsLoading(false)
     }
@@ -129,7 +194,10 @@ export default function EditProfileForm() {
           {/* Avatar section */}
           <div className="flex flex-col items-center space-y-4">
             <Avatar className="w-24 h-24">
-              <AvatarImage src={avatarPreview || user?.avatarUrl} alt={user?.name || "Avatar"} />
+              <AvatarImage
+                src={currentAvatarUrl || user?.avatarUrl}
+                alt={user?.name || "Avatar"}
+              />
               <AvatarFallback className="text-2xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white">
                 {user?.name?.charAt(0).toUpperCase() || "U"}
               </AvatarFallback>
@@ -138,12 +206,22 @@ export default function EditProfileForm() {
             <div className="flex items-center">
               <Label
                 htmlFor="avatar-upload"
-                className="flex items-center px-3 py-2 text-sm font-medium bg-gray-700 hover:bg-gray-600 cursor-pointer rounded-md border border-gray-600"
+                className={`flex items-center px-3 py-2 text-sm font-medium cursor-pointer rounded-md border ${isUploadingAvatar
+                  ? 'bg-gray-600 border-gray-500 cursor-not-allowed'
+                  : 'bg-gray-700 hover:bg-gray-600 border-gray-600'
+                  }`}
               >
                 <Upload size={16} className="mr-2" />
-                Upload Avatar
+                {isUploadingAvatar ? 'Uploading...' : 'Upload Avatar'}
               </Label>
-              <Input id="avatar-upload" type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+              <Input
+                id="avatar-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarChange}
+                disabled={isUploadingAvatar}
+              />
             </div>
           </div>
 
@@ -209,7 +287,7 @@ export default function EditProfileForm() {
             {/* GitHub */}
             <FormField
               control={form.control}
-              name="github"
+              name="socialLinks.github"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center space-x-2">
@@ -226,7 +304,7 @@ export default function EditProfileForm() {
             {/* Twitter */}
             <FormField
               control={form.control}
-              name="twitter"
+              name="socialLinks.twitter"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center space-x-2">
@@ -243,7 +321,7 @@ export default function EditProfileForm() {
             {/* LinkedIn */}
             <FormField
               control={form.control}
-              name="linkedin"
+              name="socialLinks.linkedin"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center space-x-2">
@@ -260,7 +338,7 @@ export default function EditProfileForm() {
             {/* Personal Website */}
             <FormField
               control={form.control}
-              name="personalSite"
+              name="socialLinks.personalSite"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center space-x-2">
@@ -289,7 +367,11 @@ export default function EditProfileForm() {
           )}
 
           {/* Submit button */}
-          <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600" disabled={isLoading}>
+          <Button
+            type="submit"
+            className="w-full bg-orange-500 hover:bg-orange-600"
+            disabled={isLoading || isUploadingAvatar}
+          >
             {isLoading ? "Saving..." : "Save Changes"}
           </Button>
         </form>

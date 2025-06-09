@@ -122,7 +122,7 @@ import User from "@/lib/models/User";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
-const JWT_SECRET = process.env.JWT_SECRET || "varunsingh";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Validation schema for user updates
 const updateUserSchema = z.object({

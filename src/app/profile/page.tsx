@@ -702,12 +702,12 @@ export default function ProfilePage() {
                       {user?.email ?? "user@example.com"}
                     </span>
                   </div>
-                  {/* <div className="flex items-center gap-2 text-sm">
+                  <div className="flex items-center gap-2 text-sm">
                     <MapPin size={16} className="text-gray-400" />
                     <span className="text-gray-300">
                       {user?.location ?? "Unknown location"}
                     </span>
-                  </div> */}
+                  </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Calendar size={16} className="text-gray-400" />
                     <span className="text-gray-300">
