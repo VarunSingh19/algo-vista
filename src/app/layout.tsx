@@ -7,7 +7,7 @@ import Layout from "@/components/layout/Layout";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "AlgoVista - Track Your Algorithm Progress",
+  title: "VibeArmor - Track Your Algorithm Progress",
   description: "Track your progress on algorithm problems with personalized sheets and statistics.",
 };
 
