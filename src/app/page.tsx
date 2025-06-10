@@ -150,17 +150,17 @@ export default function HomePage() {
   };
 
   // Loading state
-  if (loading) {
-    return (
-      <div className="w-full bg-black min-h-screen text-white">
-        <div className="max-w-6xl mx-auto px-4 pt-16 pb-12">
-          <div className="flex justify-center items-center min-h-[400px]">
-            <div className="w-8 h-8 border-t-2 border-b-2 border-primary rounded-full animate-spin"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="w-full bg-black min-h-screen text-white">
+  //       <div className="max-w-6xl mx-auto px-4 pt-16 pb-12">
+  //         <div className="flex justify-center items-center min-h-[400px]">
+  //           <div className="w-8 h-8 border-t-2 border-b-2 border-primary rounded-full animate-spin"></div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
 
