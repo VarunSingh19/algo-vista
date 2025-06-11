@@ -417,7 +417,7 @@ export default function BlogsPage() {
                         </div>
 
                         <div className="text-center mb-4">
-                            <div className="text-3xl font-bold text-orange-500 mb-1">4560+</div>
+                            <div className="text-3xl font-bold text-orange-500 mb-1">1,250+</div>
                             <div className="text-gray-400 text-sm">Learners waiting for blogs</div>
                         </div>
 

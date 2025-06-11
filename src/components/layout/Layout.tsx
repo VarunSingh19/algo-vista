@@ -24,6 +24,13 @@ import {
   Mail,
   Shield,
   Briefcase,
+  Github,
+  Twitter,
+  Linkedin,
+  Youtube,
+  ArrowUp,
+  Menu,
+  X,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -34,21 +41,40 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
   const [isScrolled, setIsScrolled] = React.useState(false)
+  const [showBackToTop, setShowBackToTop] = React.useState(false)
+  const [navbarVisible, setNavbarVisible] = React.useState(true)
+  const [lastScrollY, setLastScrollY] = React.useState(0)
 
-  // Handle scroll effect for navbar
+  // Enhanced scroll effects
   React.useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
+      const currentScrollY = window.scrollY
+
+      // Navbar background effect
+      setIsScrolled(currentScrollY > 20)
+
+      // Auto-hide navbar on scroll down, show on scroll up
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setNavbarVisible(false)
+      } else {
+        setNavbarVisible(true)
+      }
+
+      // Back to top button
+      setShowBackToTop(currentScrollY > 400)
+
+      setLastScrollY(currentScrollY)
     }
-    window.addEventListener("scroll", handleScroll)
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+  }, [lastScrollY])
 
   const handleLogout = async () => {
     try {
@@ -59,7 +85,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // Navigation links configuration
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
+
+  // Navigation links configuration with enhanced styling
   const navLinks = [
     {
       name: "Home",
@@ -106,39 +136,68 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     },
   ]
 
+  const socialLinks = [
+    { name: "GitHub", icon: Github, href: "https://github.com", color: "hover:text-gray-400" },
+    { name: "Twitter", icon: Twitter, href: "https://twitter.com", color: "hover:text-blue-400" },
+    { name: "LinkedIn", icon: Linkedin, href: "https://linkedin.com", color: "hover:text-blue-600" },
+    { name: "YouTube", icon: Youtube, href: "https://youtube.com", color: "hover:text-red-500" },
+  ]
+
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-      {/* Animated background elements */}
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 relative overflow-x-hidden">
+      {/* Enhanced animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-orange-500/10 to-pink-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-gradient-to-br from-orange-500/10 to-cyan-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute -bottom-40 right-1/3 w-80 h-80 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-orange-500/10 to-pink-500/10 rounded-full blur-3xl animate-pulse-slow"></div>
+        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-gradient-to-br from-orange-500/10 to-cyan-500/10 rounded-full blur-3xl animate-pulse-slow animation-delay-1000"></div>
+        <div className="absolute -bottom-40 right-1/3 w-80 h-80 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full blur-3xl animate-pulse-slow animation-delay-2000"></div>
+
+        {/* Floating particles */}
+        <div className="absolute inset-0">
+          {[...Array(15)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-orange-400/20 rounded-full animate-float-particle"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`,
+                animationDuration: `${8 + Math.random() * 4}s`,
+              }}
+            />
+          ))}
+        </div>
       </div>
 
-      {/* Navbar */}
+      {/* Enhanced Navbar with auto-hide */}
       <header
-        className={`sticky top-0 z-50 w-full transition-all duration-500 ${isScrolled
-          ? "bg-slate-900/80 backdrop-blur-xl border-b border-slate-700/50 shadow-lg shadow-black/20"
-          : "bg-transparent"
+        className={`fixed top-0 z-50 w-full transition-all duration-700 ease-out ${navbarVisible ? "translate-y-0" : "-translate-y-full"
+          } ${isScrolled
+            ? "bg-slate-900/80 backdrop-blur-2xl border-b border-slate-700/50 shadow-2xl shadow-black/20"
+            : "bg-transparent"
           }`}
       >
-        <div className="container flex h-16 items-center">
-          {/* Logo with animation */}
-          <Link href="/" className="flex items-center mr-8 group">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-orange-600 rounded-lg blur opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="relative bg-gradient-to-r from-orange-600 to-orange-600 text-white px-3 py-2 rounded-lg">
-                <Sparkles size={20} className="inline mr-2 animate-pulse" />
-                <span className="font-bold text-xl bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+        {/* Gradient line at top */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent"></div>
+
+        <div className="container flex h-20 items-center">
+          {/* Enhanced Logo with premium animations */}
+          <Link href="/" className="flex items-center mr-8 group relative">
+            <div className="relative transform transition-all duration-500 group-hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-orange-600 rounded-xl blur-lg opacity-75 group-hover:opacity-100 group-hover:blur-xl transition-all duration-500"></div>
+              <div className="relative bg-gradient-to-r from-orange-600 to-orange-600 text-white px-4 py-3 rounded-xl shadow-lg">
+                <Sparkles size={24} className="inline mr-3 animate-pulse-glow" />
+                <span className="font-bold text-2xl bg-gradient-to-r from-white via-orange-100 to-white bg-clip-text text-transparent">
                   VibeArmor
                 </span>
               </div>
+              {/* Ripple effect on hover */}
+              <div className="absolute inset-0 rounded-xl bg-white/20 scale-0 group-hover:scale-110 opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
             </div>
           </Link>
 
-          {/* Desktop navigation */}
-          <nav className="hidden md:flex items-center space-x-8 mx-6">
-            {navLinks.map((link) => {
+          {/* Enhanced Desktop navigation */}
+          <nav className="hidden lg:flex items-center space-x-8 mx-8">
+            {navLinks.map((link, index) => {
               if (link.requiresAuth && !user) return null
               const isActive = pathname === link.href
 
@@ -146,19 +205,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`relative text-sm font-medium transition-all duration-300 hover:scale-105 group ${isActive ? "text-orange-400" : "text-slate-300 hover:text-white"
+                  className={`relative text-sm font-medium transition-all duration-500 hover:scale-110 group ${isActive ? "text-orange-400" : "text-slate-300 hover:text-white"
                     }`}
+                  style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <span className="relative z-10 flex items-center">
+                  <span className="relative z-10 flex items-center px-4 py-2 rounded-lg">
                     {link.icon}
                     {link.name}
                   </span>
+
+                  {/* Active state background */}
                   {isActive && (
                     <div
-                      className={`absolute inset-0 bg-gradient-to-r ${link.gradient} opacity-10 rounded-lg scale-110 animate-pulse`}
+                      className={`absolute inset-0 bg-gradient-to-r ${link.gradient} opacity-20 rounded-lg animate-pulse-subtle`}
                     ></div>
                   )}
-                  <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-orange-500 transition-all duration-300 group-hover:w-full"></div>
+
+                  {/* Hover underline animation */}
+                  <div className="absolute -bottom-2 left-1/2 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-orange-400 transition-all duration-500 group-hover:w-full group-hover:left-0 rounded-full"></div>
+
+                  {/* Hover glow effect */}
+                  <div className="absolute inset-0 rounded-lg bg-white/5 scale-0 group-hover:scale-100 opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
                 </Link>
               )
             })}
@@ -166,37 +233,42 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {/* Enhanced Resources dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center text-sm font-medium text-slate-300 transition-all duration-300 hover:text-white hover:scale-105 group">
-                  <Zap size={16} className="mr-2 group-hover:animate-pulse" />
+                <button className="flex items-center text-sm font-medium text-slate-300 transition-all duration-500 hover:text-white hover:scale-110 group px-4 py-2 rounded-lg hover:bg-white/5">
+                  <Zap size={16} className="mr-2 group-hover:animate-pulse transition-all duration-300" />
                   Resources
-                  <ChevronDown size={16} className="ml-1 transition-transform duration-300 group-hover:rotate-180" />
+                  <ChevronDown size={16} className="ml-2 transition-transform duration-500 group-hover:rotate-180" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="start"
-                className="w-72 bg-slate-900/95 backdrop-blur-xl border-slate-700/50 shadow-2xl"
+                className="w-80 bg-slate-900/95 backdrop-blur-2xl border-slate-700/50 shadow-2xl rounded-2xl overflow-hidden animate-slide-down"
               >
-                <DropdownMenuLabel className="text-white font-semibold">
+                <DropdownMenuLabel className="text-white font-semibold p-4">
                   <div className="flex items-center">
-                    <GraduationCap size={16} className="mr-2 text-orange-500" />
+                    <div className="p-2 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 mr-3">
+                      <GraduationCap size={16} className="text-white" />
+                    </div>
                     Learning Resources
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-slate-700/50" />
-                {resourcesLinks.map((link) => (
-                  <DropdownMenuItem key={link.name} asChild className="group">
+                <DropdownMenuSeparator className="bg-gradient-to-r from-transparent via-slate-700/50 to-transparent" />
+                {resourcesLinks.map((link, index) => (
+                  <DropdownMenuItem key={link.name} asChild className="group p-0">
                     <Link
                       href={link.href}
-                      className="flex items-start p-3 rounded-lg transition-all duration-300 hover:bg-slate-800/50"
+                      className="flex items-start p-4 rounded-xl transition-all duration-300 hover:bg-slate-800/50 m-2 animate-slide-in-stagger"
+                      style={{ animationDelay: `${index * 100}ms` }}
                     >
                       <div
-                        className={`p-2 rounded-lg bg-gradient-to-r ${link.gradient} text-white mr-3 group-hover:scale-110 transition-transform duration-300`}
+                        className={`p-3 rounded-xl bg-gradient-to-r ${link.gradient} text-white mr-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
                       >
                         {link.icon}
                       </div>
                       <div>
-                        <div className="font-medium text-white">{link.name}</div>
-                        <div className="text-slate-400 mt-1">{link.description}</div>
+                        <div className="font-medium text-white group-hover:text-orange-300 transition-colors duration-300">
+                          {link.name}
+                        </div>
+                        <div className="text-slate-400 text-sm mt-1">{link.description}</div>
                       </div>
                     </Link>
                   </DropdownMenuItem>
@@ -207,9 +279,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {user?.role === "admin" && (
               <Link
                 href="/admin"
-                className={`flex items-center text-sm font-medium transition-all duration-300 hover:scale-105 px-3 py-2 rounded-lg ${pathname === "/admin"
-                  ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800"
+                className={`flex items-center text-sm font-medium transition-all duration-500 hover:scale-110 px-4 py-2 rounded-xl ${pathname === "/admin"
+                  ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg shadow-red-500/25"
+                  : "text-slate-300 hover:text-white hover:bg-slate-800/50"
                   }`}
               >
                 <ShieldCheck size={16} className="mr-2" />
@@ -223,92 +295,101 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center space-x-3 rounded-full p-1 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900">
+                  <button className="flex items-center space-x-3 rounded-full p-2 transition-all duration-500 hover:scale-110 hover:shadow-2xl hover:shadow-orange-500/25 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-slate-900 group">
                     <div className="relative">
-                      <Avatar className="h-10 w-10 ring-2 ring-gradient-to-r from-orange-500 to-orange-500 ring-offset-2 ring-offset-slate-900">
+                      <Avatar className="h-12 w-12 ring-2 ring-orange-500 ring-offset-2 ring-offset-slate-900 transition-all duration-300 group-hover:ring-4">
                         <AvatarImage src={user.avatarUrl || "/placeholder.svg"} alt={user.name} />
-                        <AvatarFallback className="text-sm font-semibold bg-gradient-to-r from-orange-500 to-orange-500 text-white">
+                        <AvatarFallback className="text-sm font-semibold bg-gradient-to-r from-orange-500 to-orange-600 text-white">
                           {user.name.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-slate-900 animate-pulse"></div>
+                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-slate-900 animate-pulse-glow"></div>
                     </div>
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
-                  className="w-64 bg-slate-900/95 backdrop-blur-xl border-slate-700/50 shadow-2xl"
+                  className="w-72 bg-slate-900/95 backdrop-blur-2xl border-slate-700/50 shadow-2xl rounded-2xl overflow-hidden animate-slide-down"
                 >
-                  <DropdownMenuLabel className="font-normal p-4">
-                    <div className="flex items-center space-x-3">
-                      <Avatar className="h-12 w-12">
+                  <DropdownMenuLabel className="font-normal p-6">
+                    <div className="flex items-center space-x-4">
+                      <Avatar className="h-14 w-14 ring-2 ring-orange-500">
                         <AvatarImage src={user.avatarUrl || "/placeholder.svg"} alt={user.name} />
-                        <AvatarFallback className="bg-gradient-to-r from-orange-500 to-orange-500 text-white font-semibold">
+                        <AvatarFallback className="bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-lg">
                           {user.name.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="text-sm font-medium text-white">{user.name}</p>
-                        <p className="text-xs text-slate-400">{user.email}</p>
-                        <div className="flex items-center mt-1">
+                        <p className="text-lg font-semibold text-white">{user.name}</p>
+                        <p className="text-sm text-slate-400">{user.email}</p>
+                        <div className="flex items-center mt-2">
                           <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                          <span className="text-xs text-green-600 dark:text-green-400">Online</span>
+                          <span className="text-xs text-green-400 font-medium">Online</span>
                         </div>
                       </div>
                     </div>
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-slate-700/50" />
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href="/profile"
-                      className="flex items-center cursor-pointer p-3 transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-950/50 dark:hover:to-purple-950/50"
-                    >
-                      <div className="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white mr-3">
-                        <User size={14} />
-                      </div>
-                      <div>
-                        <div className="font-medium">Profile</div>
-                        <div className="text-xs text-slate-400">Manage your account</div>
-                      </div>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href="/submissions"
-                      className="flex items-center cursor-pointer p-3 transition-all duration-300 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-950/50 dark:hover:to-teal-950/50"
-                    >
-                      <div className="p-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white mr-3">
-                        <ClipboardList size={14} />
-                      </div>
-                      <div>
-                        <div className="font-medium">My Submissions</div>
-                        <div className="text-xs text-slate-400">View your progress</div>
-                      </div>
-                    </Link>
-                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-gradient-to-r from-transparent via-slate-700/50 to-transparent" />
+
+                  {[
+                    {
+                      href: "/profile",
+                      icon: User,
+                      label: "Profile",
+                      desc: "Manage your account",
+                      gradient: "from-blue-500 to-purple-500",
+                    },
+                    {
+                      href: "/submissions",
+                      icon: ClipboardList,
+                      label: "My Submissions",
+                      desc: "View your progress",
+                      gradient: "from-emerald-500 to-teal-500",
+                    },
+                  ].map((item, index) => (
+                    <DropdownMenuItem key={item.href} asChild>
+                      <Link
+                        href={item.href}
+                        className="flex items-center cursor-pointer p-4 transition-all duration-300 hover:bg-slate-800/50 m-2 rounded-xl animate-slide-in-stagger"
+                        style={{ animationDelay: `${index * 100}ms` }}
+                      >
+                        <div
+                          className={`p-3 rounded-xl bg-gradient-to-r ${item.gradient} text-white mr-4 transition-transform duration-300 hover:scale-110`}
+                        >
+                          <item.icon size={16} />
+                        </div>
+                        <div>
+                          <div className="font-medium text-white">{item.label}</div>
+                          <div className="text-xs text-slate-400">{item.desc}</div>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+
                   {user.role === "admin" && (
                     <DropdownMenuItem asChild>
                       <Link
                         href="/admin"
-                        className="flex items-center cursor-pointer p-3 transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 dark:hover:from-red-950/50 dark:hover:to-pink-950/50"
+                        className="flex items-center cursor-pointer p-4 transition-all duration-300 hover:bg-slate-800/50 m-2 rounded-xl"
                       >
-                        <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-pink-500 text-white mr-3">
-                          <ShieldCheck size={14} />
+                        <div className="p-3 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white mr-4 transition-transform duration-300 hover:scale-110">
+                          <ShieldCheck size={16} />
                         </div>
                         <div>
-                          <div className="font-medium">Admin Panel</div>
+                          <div className="font-medium text-white">Admin Panel</div>
                           <div className="text-xs text-slate-400">System management</div>
                         </div>
                       </Link>
                     </DropdownMenuItem>
                   )}
-                  <DropdownMenuSeparator className="bg-slate-700/50" />
+
+                  <DropdownMenuSeparator className="bg-gradient-to-r from-transparent via-slate-700/50 to-transparent" />
                   <DropdownMenuItem
-                    className="flex items-center cursor-pointer p-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300"
+                    className="flex items-center cursor-pointer p-4 text-red-400 hover:bg-red-950/50 transition-all duration-300 m-2 rounded-xl"
                     onClick={handleLogout}
                   >
-                    <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-pink-500 text-white mr-3">
-                      <LogOut size={14} />
+                    <div className="p-3 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white mr-4 transition-transform duration-300 hover:scale-110">
+                      <LogOut size={16} />
                     </div>
                     <div>
                       <div className="font-medium">Logout</div>
@@ -318,23 +399,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <div className="hidden md:flex space-x-3">
+              <div className="hidden lg:flex space-x-3">
                 <Button
                   asChild
                   variant="outline"
                   size="sm"
-                  className="transition-all duration-300 hover:scale-105 hover:bg-slate-100"
+                  className="transition-all duration-500 hover:scale-110 hover:bg-slate-100 border-slate-600 hover:border-slate-400"
                 >
                   <Link href="/login">Log in</Link>
                 </Button>
                 <Button
                   asChild
                   size="sm"
-                  className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 shadow-lg hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 hover:scale-105"
+                  className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 shadow-lg hover:shadow-2xl hover:shadow-orange-500/25 transition-all duration-500 hover:scale-110 relative overflow-hidden group"
                 >
-                  <Link href="/register" className="flex items-center">
-                    <Sparkles size={16} className="mr-2" />
+                  <Link href="/register" className="flex items-center relative z-10">
+                    <Sparkles size={16} className="mr-2 animate-pulse" />
                     Sign up
+                    <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></div>
                   </Link>
                 </Button>
               </div>
@@ -344,32 +426,28 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden relative transition-all duration-300 hover:scale-110 hover:bg-slate-800"
+              className="lg:hidden relative transition-all duration-500 hover:scale-110 hover:bg-slate-800/50 rounded-xl"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               <div className="relative w-6 h-6">
-                <span
-                  className={`absolute h-0.5 w-6 bg-slate-600 dark:bg-slate-300 transform transition-all duration-300 ${mobileMenuOpen ? "rotate-45 top-3" : "top-1"}`}
-                ></span>
-                <span
-                  className={`absolute h-0.5 w-6 bg-slate-600 dark:bg-slate-300 top-3 transition-all duration-300 ${mobileMenuOpen ? "opacity-0" : "opacity-100"}`}
-                ></span>
-                <span
-                  className={`absolute h-0.5 w-6 bg-slate-600 dark:bg-slate-300 transform transition-all duration-300 ${mobileMenuOpen ? "-rotate-45 top-3" : "top-5"}`}
-                ></span>
+                {mobileMenuOpen ? (
+                  <X className="w-6 h-6 text-slate-300 animate-spin-in" />
+                ) : (
+                  <Menu className="w-6 h-6 text-slate-300 animate-fade-in" />
+                )}
               </div>
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Enhanced Mobile menu */}
+      {/* Enhanced Mobile menu with backdrop blur */}
       <div
-        className={`fixed inset-0 top-16 z-40 w-full bg-slate-900/95 backdrop-blur-xl md:hidden transition-all duration-500 ${mobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"
+        className={`fixed inset-0 top-20 z-40 w-full bg-slate-900/95 backdrop-blur-2xl lg:hidden transition-all duration-700 ${mobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"
           }`}
       >
-        <div className="container py-6 space-y-6 h-full overflow-y-auto">
-          <nav className="space-y-2">
+        <div className="container py-8 space-y-8 h-full overflow-y-auto">
+          <nav className="space-y-3">
             {navLinks.map((link, index) => {
               if (link.requiresAuth && !user) return null
               const isActive = pathname === link.href
@@ -378,144 +456,139 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`flex items-center px-4 py-3 text-sm rounded-xl transition-all duration-300 hover:scale-105 ${isActive
-                    ? `bg-gradient-to-r ${link.gradient} text-white shadow-lg`
-                    : "hover:bg-slate-800 text-slate-300"
+                  className={`flex items-center px-6 py-4 text-lg rounded-2xl transition-all duration-500 hover:scale-105 animate-slide-in-stagger ${isActive
+                    ? `bg-gradient-to-r ${link.gradient} text-white shadow-lg shadow-orange-500/25`
+                    : "hover:bg-slate-800/50 text-slate-300 hover:text-white"
                     }`}
                   style={{ animationDelay: `${index * 100}ms` }}
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {link.icon}
+                  <div className={`p-2 rounded-lg ${isActive ? "bg-white/20" : "bg-slate-700"} mr-4`}>{link.icon}</div>
                   {link.name}
                 </Link>
               )
             })}
 
-            {/* Resources section in mobile */}
-            <div className="px-4 py-3">
-              <p className="text-sm font-semibold text-white mb-3 flex items-center">
-                <GraduationCap size={16} className="mr-2 text-blue-500" />
+            {/* Mobile Resources section */}
+            <div className="px-6 py-4">
+              <p className="text-lg font-semibold text-white mb-4 flex items-center">
+                <div className="p-2 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 mr-3">
+                  <GraduationCap size={16} className="text-white" />
+                </div>
                 Resources
               </p>
-              <div className="space-y-2 pl-2">
+              <div className="space-y-3 pl-2">
                 {resourcesLinks.map((link, index) => (
                   <Link
                     key={link.name}
                     href={link.href}
-                    className="flex items-center p-3 rounded-xl hover:bg-slate-800 transition-all duration-300"
+                    className="flex items-center p-4 rounded-2xl hover:bg-slate-800/50 transition-all duration-500 animate-slide-in-stagger"
                     style={{ animationDelay: `${(navLinks.length + index) * 100}ms` }}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <div className={`p-2 rounded-lg bg-gradient-to-r ${link.gradient} text-white mr-3`}>
+                    <div className={`p-3 rounded-xl bg-gradient-to-r ${link.gradient} text-white mr-4`}>
                       {link.icon}
                     </div>
                     <div>
                       <div className="font-medium text-white">{link.name}</div>
-                      <div className="text-xs text-slate-400">{link.description}</div>
+                      <div className="text-sm text-slate-400">{link.description}</div>
                     </div>
                   </Link>
                 ))}
               </div>
             </div>
-
-            {user?.role === "admin" && (
-              <Link
-                href="/admin"
-                className="flex items-center px-4 py-3 text-sm rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg transition-all duration-300 hover:scale-105"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <ShieldCheck size={16} className="mr-2" />
-                Admin Panel
-              </Link>
-            )}
           </nav>
 
-          {!user && (
-            <div className="grid grid-cols-2 gap-3 px-4">
+          {/* Mobile auth section */}
+          {!user ? (
+            <div className="grid grid-cols-2 gap-4 px-6">
               <Button
                 asChild
                 variant="outline"
-                size="sm"
-                className="transition-all duration-300 hover:scale-105"
-                onClick={() => setMobileMenuOpen(false)} // Add this line
+                className="transition-all duration-500 hover:scale-105 border-slate-600"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 <Link href="/login">Log in</Link>
               </Button>
               <Button
                 asChild
-                size="sm"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 hover:scale-105"
-                onClick={() => setMobileMenuOpen(false)} // Add this line
+                className="bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 transition-all duration-500 hover:scale-105"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 <Link href="/register">Sign up</Link>
               </Button>
             </div>
-          )}
-          {user && (
-            <div className="border-t border-slate-700 pt-6 px-4">
-              <div className="flex items-center justify-between py-3 mb-4">
+          ) : (
+            <div className="border-t border-slate-700/50 pt-8 px-6">
+              <div className="flex items-center justify-between py-4 mb-6">
                 <div className="flex items-center">
                   <div className="relative">
-                    <Avatar className="h-12 w-12 mr-3 ring-2 ring-orange-500 ring-offset-2 ring-offset-slate-900">
+                    <Avatar className="h-14 w-14 mr-4 ring-2 ring-orange-500 ring-offset-2 ring-offset-slate-900">
                       <AvatarImage src={user.avatarUrl || "/placeholder.svg"} alt={user.name} />
-                      <AvatarFallback className="bg-gradient-to-r from-orange-500 to-orange-500 text-white font-semibold">
+                      <AvatarFallback className="bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold">
                         {user.name.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-slate-900 animate-pulse"></div>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-white">{user.name}</p>
-                    <p className="text-xs text-slate-400">{user.email}</p>
+                    <p className="text-lg font-semibold text-white">{user.name}</p>
+                    <p className="text-sm text-slate-400">{user.email}</p>
                     <div className="flex items-center mt-1">
                       <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                      <span className="text-xs text-green-600 dark:text-green-400">Online</span>
+                      <span className="text-xs text-green-400">Online</span>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="space-y-2">
-                <Link
-                  href="/profile"
-                  className="flex items-center p-3 rounded-xl hover:bg-slate-800 transition-all duration-300"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <div className="p-2 rounded-lg bg-gradient-to-r from-orange-500 to-orange-500 text-white mr-3">
-                    <User size={14} />
-                  </div>
-                  <div>
-                    <div className="font-medium "><span className="text-white">Profile</span></div>
-                    <div className="text-xs text-slate-400">Manage your account</div>
-                  </div>
-                </Link>
-                <Link
-                  href="/submissions"
-                  className="flex items-center p-3 rounded-xl hover:bg-slate-800 transition-all duration-300"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <div className="p-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white mr-3">
-                    <ClipboardList size={14} />
-                  </div>
-                  <div>
-                    <div className="font-medium text-white">My Submissions</div>
-                    <div className="text-xs text-slate-400">View your progress</div>
-                  </div>
-                </Link>
+
+              <div className="space-y-3">
+                {[
+                  {
+                    href: "/profile",
+                    icon: User,
+                    label: "Profile",
+                    desc: "Manage your account",
+                    gradient: "from-blue-500 to-purple-500",
+                  },
+                  {
+                    href: "/submissions",
+                    icon: ClipboardList,
+                    label: "My Submissions",
+                    desc: "View your progress",
+                    gradient: "from-emerald-500 to-teal-500",
+                  },
+                ].map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="flex items-center p-4 rounded-2xl hover:bg-slate-800/50 transition-all duration-500"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <div className={`p-3 rounded-xl bg-gradient-to-r ${item.gradient} text-white mr-4`}>
+                      <item.icon size={16} />
+                    </div>
+                    <div>
+                      <div className="font-medium text-white">{item.label}</div>
+                      <div className="text-sm text-slate-400">{item.desc}</div>
+                    </div>
+                  </Link>
+                ))}
+
                 <Button
                   variant="ghost"
-                  size="sm"
-                  className="w-full flex items-center justify-start p-3 text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300"
+                  className="w-full flex items-center justify-start p-4 text-left text-red-400 hover:bg-red-950/50 transition-all duration-500 rounded-2xl"
                   onClick={() => {
                     handleLogout()
                     setMobileMenuOpen(false)
                   }}
                 >
-                  <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-pink-500 text-white mr-3">
-                    <LogOut size={14} />
+                  <div className="p-3 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white mr-4">
+                    <LogOut size={16} />
                   </div>
                   <div>
                     <div className="font-medium">Logout</div>
-                    <div className="text-xs opacity-75">Sign out of your account</div>
+                    <div className="text-sm opacity-75">Sign out of your account</div>
                   </div>
                 </Button>
               </div>
@@ -525,74 +598,123 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 relative z-10">{children}</main>
+      <main className="flex-1 relative z-10 pt-20">{children}</main>
 
-      {/* Enhanced Footer */}
-      <footer className="relative border-t border-slate-700/50 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-slate-300 overflow-hidden">
-        {/* Footer background animation */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 animate-pulse"></div>
+      {/* Enhanced Premium Footer */}
+      <footer className="relative border-t border-slate-700/50 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-300 overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent animate-pulse-slow"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/3 via-purple-600/3 to-pink-600/3 animate-gradient-shift"></div>
 
-        <div className="container relative py-12 md:py-16">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            {/* Brand section */}
-            <div className="md:col-span-2">
-              <div className="flex items-center mb-4">
+          {/* Floating geometric shapes */}
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute opacity-10"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`,
+              }}
+            >
+              <div className="w-4 h-4 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full animate-float-slow"></div>
+            </div>
+          ))}
+        </div>
+
+        <div className="container relative py-16 md:py-20">
+          {/* Main footer content */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+            {/* Enhanced Brand section */}
+            <div className="lg:col-span-2 space-y-6">
+              <div className="flex items-center group">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-orange-600 rounded-lg blur opacity-75"></div>
-                  <div className="relative bg-gradient-to-r from-orange-600 to-orange-600 text-white px-3 py-2 rounded-lg">
-                    <Sparkles size={20} className="inline mr-2" />
-                    <span className="font-bold text-xl">VibeArmor</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-orange-600 rounded-xl blur-lg opacity-75 group-hover:opacity-100 transition-all duration-500"></div>
+                  <div className="relative bg-gradient-to-r from-orange-600 to-orange-600 text-white px-4 py-3 rounded-xl">
+                    <Sparkles size={24} className="inline mr-3 animate-pulse-glow" />
+                    <span className="font-bold text-2xl">VibeArmor</span>
                   </div>
                 </div>
               </div>
-              <p className="text-slate-400 mb-4 max-w-md">
+
+              <p className="text-slate-400 text-lg leading-relaxed max-w-md animate-fade-in-up">
                 Mastering algorithms, one problem at a time. Join thousands of developers improving their coding skills
                 with our curated problem sets and comprehensive learning resources.
               </p>
+
+              {/* Enhanced social media icons */}
               <div className="flex space-x-4">
-                <div className="flex items-center text-sm text-slate-400">
-                  <Heart size={16} className="mr-2 text-red-500 animate-pulse" />
+                {socialLinks.map((social, index) => (
+                  <a
+                    key={social.name}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`p-3 rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 transition-all duration-500 hover:scale-110 hover:bg-slate-700/50 ${social.color} group animate-slide-in-stagger`}
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <social.icon size={20} className="transition-transform duration-300 group-hover:scale-110" />
+                  </a>
+                ))}
+              </div>
+
+              <div className="flex items-center space-x-6 text-sm text-slate-400">
+                <div className="flex items-center animate-fade-in-up" style={{ animationDelay: "200ms" }}>
+                  <Heart size={16} className="mr-2 text-red-500 animate-pulse-glow" />
                   Made with love for developers
                 </div>
               </div>
             </div>
 
-            {/* Quick Links */}
-            <div>
-              <h3 className="font-semibold text-white mb-4 flex items-center">
-                <Code size={16} className="mr-2 text-orange-400" />
-                Quick Links
+            {/* Company Links */}
+            <div className="animate-fade-in-up" style={{ animationDelay: "300ms" }}>
+              <h3 className="font-semibold text-white mb-6 flex items-center text-lg">
+                <div className="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 mr-3">
+                  <Briefcase size={16} className="text-white" />
+                </div>
+                Company
               </h3>
-              <ul className="space-y-2">
-                {["About", "Contact", "Privacy", "Terms"].map((item) => (
+              <ul className="space-y-3">
+                {["About", "Contact", "Privacy", "Terms"].map((item, index) => (
                   <li key={item}>
                     <Link
                       href={`/${item.toLowerCase()}`}
-                      className="text-slate-400 hover:text-white transition-all duration-300 hover:translate-x-1 flex items-center group"
+                      className="text-slate-400 hover:text-white transition-all duration-500 hover:translate-x-2 flex items-center group text-sm animate-slide-in-stagger"
+                      style={{ animationDelay: `${index * 100}ms` }}
                     >
-                      <span className="w-1 h-1 bg-orange-400 rounded-full mr-2 opacity-50 group-hover:opacity-100 transition-opacity duration-300"></span>
+                      <span className="w-1.5 h-1.5 bg-orange-400 rounded-full mr-3 opacity-50 group-hover:opacity-100 group-hover:scale-125 transition-all duration-300"></span>
                       {item}
+                      <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <ChevronDown size={14} className="rotate-[-90deg]" />
+                      </div>
                     </Link>
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Resources */}
-            <div>
-              <h3 className="font-semibold text-white mb-4 flex items-center">
-                <BookOpen size={16} className="mr-2 text-emerald-400" />
-                Resources
+            {/* Quick Access */}
+            <div className="animate-fade-in-up" style={{ animationDelay: "400ms" }}>
+              <h3 className="font-semibold text-white mb-6 flex items-center text-lg">
+                <div className="p-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 mr-3">
+                  <Zap size={16} className="text-white" />
+                </div>
+                Quick Access
               </h3>
-              <ul className="space-y-2">
-                {resourcesLinks.map((item) => (
+              <ul className="space-y-3">
+                {resourcesLinks.map((item, index) => (
                   <li key={item.name}>
                     <Link
                       href={item.href}
-                      className="text-slate-400 hover:text-white transition-all duration-300 hover:translate-x-1 flex items-center group"
+                      className="text-slate-400 hover:text-white transition-all duration-500 hover:translate-x-2 flex items-center group text-sm animate-slide-in-stagger"
+                      style={{ animationDelay: `${index * 100}ms` }}
                     >
-                      <span className="w-1 h-1 bg-emerald-400 rounded-full mr-2 opacity-50 group-hover:opacity-100 transition-opacity duration-300"></span>
+                      <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full mr-3 opacity-50 group-hover:opacity-100 group-hover:scale-125 transition-all duration-300"></span>
                       {item.name}
+                      <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <ChevronDown size={14} className="rotate-[-90deg]" />
+                      </div>
                     </Link>
                   </li>
                 ))}
@@ -600,70 +722,47 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
 
-          {/* Footer bottom */}
+          {/* Enhanced footer bottom */}
           <div className="border-t border-slate-700/50 pt-8">
-            <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-              <div className="flex items-center space-x-6 text-sm text-slate-400">
-                <div className="flex items-center">
-                  <Shield size={16} className="mr-2 text-green-400" />
-                  Secure & Trusted
-                </div>
-                <div className="flex items-center">
-                  <Zap size={16} className="mr-2 text-yellow-400" />
-                  Lightning Fast
-                </div>
-                <div className="flex items-center">
-                  <Heart size={16} className="mr-2 text-red-400" />
-                  Community Driven
-                </div>
+            <div className="flex flex-col lg:flex-row items-center justify-between space-y-6 lg:space-y-0">
+              {/* Trust indicators */}
+              <div className="flex flex-wrap items-center justify-center lg:justify-start space-x-8 text-sm text-slate-400">
+                {[
+                  { icon: Shield, text: "Secure & Trusted", color: "text-green-400" },
+                  { icon: Zap, text: "Lightning Fast", color: "text-yellow-400" },
+                  { icon: Heart, text: "Community Driven", color: "text-red-400" },
+                ].map((item, index) => (
+                  <div
+                    key={item.text}
+                    className="flex items-center animate-fade-in-up"
+                    style={{ animationDelay: `${index * 200}ms` }}
+                  >
+                    <item.icon size={16} className={`mr-2 ${item.color} animate-pulse-subtle`} />
+                    {item.text}
+                  </div>
+                ))}
               </div>
 
-              <div className="text-sm text-slate-400 flex items-center">
+              {/* Copyright */}
+              <div
+                className="text-sm text-slate-400 flex items-center animate-fade-in-up"
+                style={{ animationDelay: "600ms" }}
+              >
                 <Mail size={16} className="mr-2" />© {new Date().getFullYear()} VibeArmor. All rights reserved.
               </div>
             </div>
           </div>
-
-          {/* Floating particles effect */}
-          <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-            {[...Array(20)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute w-1 h-1 bg-blue-400/30 rounded-full animate-float"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 3}s`,
-                  animationDuration: `${3 + Math.random() * 2}s`,
-                }}
-              ></div>
-            ))}
-          </div>
         </div>
       </footer>
 
-      {/* Custom CSS for animations */}
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0; }
-          50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
-        }
-        
-        .animate-float {
-          animation: float 4s ease-in-out infinite;
-        }
-        
-        @keyframes shimmer {
-          0% { background-position: -200% 0; }
-          100% { background-position: 200% 0; }
-        }
-        
-        .animate-shimmer {
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-          background-size: 200% 100%;
-          animation: shimmer 2s infinite;
-        }
-      `}</style>
+      {/* Enhanced Back to Top Button */}
+      <button
+        onClick={scrollToTop}
+        className={`fixed bottom-8 right-8 z-50 p-4 bg-gradient-to-r from-orange-600 to-orange-600 text-white rounded-full shadow-2xl transition-all duration-500 hover:scale-110 hover:shadow-orange-500/25 ${showBackToTop ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16"
+          }`}
+      >
+        <ArrowUp size={20} className="animate-bounce" />
+      </button>
     </div>
   )
 }

@@ -30,7 +30,7 @@ export default function CareerPage() {
             department: "Engineering",
             location: "Remote/Hybrid",
             type: "Full-time",
-            experience: "2-4 years",
+            experience: "0-1 year",
             skills: ["React", "Node.js", "MongoDB", "TypeScript"],
             description: "Build and maintain our learning platform, create interactive coding challenges, and develop user-friendly interfaces."
         },
@@ -40,7 +40,7 @@ export default function CareerPage() {
             department: "Education",
             location: "Remote",
             type: "Full-time",
-            experience: "1-3 years",
+            experience: "0",
             skills: ["DSA", "System Design", "Technical Writing", "Video Creation"],
             description: "Create engaging educational content, tutorials, and coding challenges for our growing community of learners."
         },
@@ -50,7 +50,7 @@ export default function CareerPage() {
             department: "Design",
             location: "Remote/Hybrid",
             type: "Full-time",
-            experience: "2-5 years",
+            experience: "0",
             skills: ["Figma", "User Research", "Prototyping", "Design Systems"],
             description: "Design intuitive user experiences and create beautiful interfaces that make learning DSA enjoyable and effective."
         },
@@ -60,7 +60,7 @@ export default function CareerPage() {
             department: "Marketing",
             location: "Remote",
             type: "Full-time",
-            experience: "1-3 years",
+            experience: "0",
             skills: ["Digital Marketing", "Content Strategy", "SEO", "Analytics"],
             description: "Drive growth through strategic marketing campaigns and help more developers discover our platform."
         }
@@ -157,7 +157,7 @@ export default function CareerPage() {
                             <div className="text-gray-400 text-sm">Team Members</div>
                         </div>
                         <div>
-                            <div className="text-3xl font-bold text-blue-500 mb-1">4560+</div>
+                            <div className="text-3xl font-bold text-blue-500 mb-1">1,250+</div>
                             <div className="text-gray-400 text-sm">Active Users</div>
                         </div>
                         <div>
