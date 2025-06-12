@@ -333,7 +333,7 @@ export default function SheetList({ searchQuery = "", selectedFilter }: SheetLis
                 const enhancedSheets = data.map((sheet: Sheet, index: number) => ({
                     ...sheet,
                     difficulty: ["Beginner", "Intermediate", "Advanced"][index % 3] as Sheet["difficulty"],
-                    estimatedTime: ["2-3 weeks", "4-6 weeks", "6-8 weeks"][index % 3],
+                    estimatedTime: ["3-4 months", "4-6 weeks", "6-8 weeks"][index % 3],
                     tags: [
                         ["Arrays", "Strings", "Basic"],
                         ["Trees", "Graphs", "DP"],
