@@ -410,7 +410,7 @@ function generateStructuredData() {
       name: "VibeArmor",
       logo: {
         "@type": "ImageObject",
-        url: "https://vibearmor.com/logo.png",
+        url: "https://res-console.cloudinary.com/dvbw76boh/thumbnails/v1/image/upload/v1749755149/Q2hhdEdQVF9JbWFnZV9KdW5fMTJfMjAyNV8wMV8yMF8xM19QTV95aGJjMG0=/drilldown",
       },
     },
     featureList: [
@@ -421,7 +421,7 @@ function generateStructuredData() {
       "Achievement System",
       "Personalized Learning Paths",
     ],
-    screenshot: "https://vibearmor.com/screenshot.png",
+    screenshot: "https://res-console.cloudinary.com/dvbw76boh/thumbnails/v1/image/upload/v1749755149/Q2hhdEdQVF9JbWFnZV9KdW5fMTJfMjAyNV8wMV8yMF8xM19QTV95aGJjMG0=/drilldown",
     softwareVersion: "1.0.0",
     datePublished: "2024-01-01",
     dateModified: currentDate,
@@ -621,7 +621,7 @@ export const metadata: Metadata = {
         secureUrl: "https://res-console.cloudinary.com/dvbw76boh/thumbnails/v1/image/upload/v1749755149/Q2hhdEdQVF9JbWFnZV9KdW5fMTJfMjAyNV8wMV8yMF8xM19QTV95aGJjMG0=/drilldown",
       },
       {
-        url: "/logo.png",
+        url: "https://res-console.cloudinary.com/dvbw76boh/thumbnails/v1/image/upload/v1749755149/Q2hhdEdQVF9JbWFnZV9KdW5fMTJfMjAyNV8wMV8yMF8xM19QTV95aGJjMG0=/drilldown",
         width: 1200,
         height: 1200,
         alt: "VibeArmor Logo",
@@ -641,7 +641,7 @@ export const metadata: Metadata = {
       "Ace your next coding interview with our interactive algorithm practice platform. Track progress, visualize concepts, and get AI-powered feedback on your solutions.",
     images: [
       {
-        url: "https://vibearmor.com/twitter-image.png",
+        url: "https://res-console.cloudinary.com/dvbw76boh/thumbnails/v1/image/upload/v1749755149/Q2hhdEdQVF9JbWFnZV9KdW5fMTJfMjAyNV8wMV8yMF8xM19QTV95aGJjMG0=/drilldown",
         alt: "VibeArmor - Algorithm Practice Platform",
         width: 1200,
         height: 630,
