@@ -232,7 +232,7 @@ export default function CareerPage() {
                                 <div className="flex justify-between items-center">
                                     <span className="text-gray-400 text-sm">{position.experience} experience</span>
                                     <div className={`flex items-center gap-2 text-orange-500 text-sm font-medium transition-transform duration-200 ${hoveredPosition === position.id ? 'translate-x-2' : ''}`}>
-                                        <a href='https://docs.google.com/forms/d/e/1FAIpQLSffm4S3PQlw6A3kERYngWM3WvFNUAa55TcIZBvr8x0RpGme-Q/viewform' target='_blank'>Apply Now</a>
+                                        <a href='https://forms.gle/UD11TqMHNKJx1tGo8' target='_blank'>Apply Now</a>
                                         <ArrowRight className="w-4 h-4" />
                                     </div>
                                 </div>
@@ -291,7 +291,7 @@ export default function CareerPage() {
                         </div>
 
                         <a
-                            href="https://docs.google.com/forms/d/e/1FAIpQLSffm4S3PQlw6A3kERYngWM3WvFNUAa55TcIZBvr8x0RpGme-Q/viewform"
+                            href="https://forms.gle/UD11TqMHNKJx1tGo8"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-2xl font-semibold text-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 group"
